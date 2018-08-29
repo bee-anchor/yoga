@@ -1,0 +1,5 @@
+venv/
+\.eggs/
+\.idea/
+\.pytest_cache/
+*.pyc
