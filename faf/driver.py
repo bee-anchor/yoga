@@ -42,7 +42,7 @@ def get_driver(args):
     elif args.execution == 'grid_local':
         command_executor = "http://localhost:4444/wd/hub"
         desired_capabilities = {
-
+            'browserName': args.browser
         }
         driver = appium_webdriver.Remote(command_executor, desired_capabilities)
 

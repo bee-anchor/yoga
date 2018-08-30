@@ -31,8 +31,8 @@ behave_parser.add_argument('-t', '--tags', help='tags filter for running tests')
 
 def arg_validation(args):
     if args.execution != 'non-ui':
-        if args.execution == 'selenium_local' and args.browser is None:
-            raise RuntimeError('When using an execution type of selenium_local, a browser must be specified')
+        if args.execution in {'selenium_local', 'grid_local'} and args.browser is None:
+            raise RuntimeError('When using an execution type of selenium_local or grid_local, a browser must be specified')
         elif args.execution in {'selenium_remote', 'appium_local', 'appium_remote'} and args.capability is None:
             raise RuntimeError('When using an execution type of selenium_remote, appium_local or appium_remote, capability must be specified')
 
@@ -53,7 +53,7 @@ def nose_args(args):
     return argv
 
 def pytest_args(cmd_line_args):
-    args = []
+    args = ['-s']
     # add test directory location if specified, else the default location
     if cmd_line_args.test_dir:
         args.append(cmd_line_args.test_dir)
