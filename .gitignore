@@ -3,3 +3,7 @@ venv/
 \.idea/
 \.pytest_cache/
 *.pyc
+
+\.vscode/
+
+faf\.egg-info/

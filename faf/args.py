@@ -3,7 +3,7 @@ import argparse
 base_parser = argparse.ArgumentParser(add_help=False)
 base_parser.add_argument('-d', '--debug', action='store_true',
                          help='run in debug mode')
-base_parser.add_argument('-c', '--config', required=True, help='config file to use')
+base_parser.add_argument('-c', '--config', default='config.ini', help="config file to use, defaults to 'config.ini'")
 base_parser.add_argument('-o', '--override', help='config value override')
 base_parser.add_argument('-e', '--environment', required=True, choices=['local', 'test'], help='environment to run in')
 base_parser.add_argument('-x', '--execution', required=True,
