@@ -4,7 +4,7 @@ base_parser = argparse.ArgumentParser(add_help=False)
 base_parser.add_argument('-d', '--debug', action='store_true',
                          help='run in debug mode')
 base_parser.add_argument('-c', '--config', default='config.ini', help="config file to use, defaults to 'config.ini'")
-base_parser.add_argument('-o', '--override', help='config value override')
+base_parser.add_argument('-o', '--override', nargs='+', help='config value override e.g. -o section.option=value section.option2=value2')
 base_parser.add_argument('-e', '--environment', required=True, choices=['local', 'test'], help='environment to run in')
 base_parser.add_argument('-x', '--execution', required=True,
                          choices=['selenium_local', 'selenium_remote', 'appium_local', 'appium_remote', 'grid_local', 'non-ui'],
