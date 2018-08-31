@@ -1,5 +1,5 @@
 import pytest
-from faf.driver import set_driver
+from faf.driver import Driver
 from faf.args import pytest_parser, arg_validation, pytest_args
 from faf.config import Config
 
@@ -9,7 +9,7 @@ if __name__ == '__main__':
     arg_validation(args)
     Config(args).setup()
     if args.execution != 'non-ui':
-        set_driver(args)
+        Driver(args).set_driver()
     pytest.main(pytest_args(args))
 
 

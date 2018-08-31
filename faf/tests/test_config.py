@@ -1,42 +1,49 @@
 import pytest
-import pdb
 from argparse import Namespace
 from faf.config import Config
+from faf.context import CONTEXT
 import tempfile
 
 
 class TestConfig():
 
-    def test_config_setup_with_valid_args_sets_the_global_config(self):
+    @pytest.fixture()
+    def reset_context_config(self):
+        CONTEXT.clear_config()
+        yield
+
+    def test_config_setup_with_valid_args_sets_the_global_config(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-appium_url: eu1.appium.testobject.com/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = 300
-username = username
-access_key = accesskey
-
-[slack]
-webhook = https://hooks.slack.com/services/hookhookhook
-
-[environment.local]
-url = https://testsite.com
-
-[environment.test]
-url = https://testsite.com
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                appium_url: eu1.appium.testobject.com/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = 300
+                username = username
+                access_key = accesskey
+                
+                [slack]
+                webhook = https://hooks.slack.com/services/hookhookhook
+                
+                [application]
+                name = test
+                
+                [environment.local]
+                url = https://testsite.com
+                
+                [environment.test]
+                url = https://testsite.com
+                ''')
             config.flush()
             args = Namespace(config=config.name, execution='selenium_local', environment='local', browser='chrome',
                              override=None)
             Config(args).setup()
 
-            from faf.config import CONFIG
-            assert 'remote_service' in CONFIG.sections()
-            assert 'environment' in CONFIG.sections()
+            assert 'remote_service' in CONTEXT.config.sections()
+            assert 'environment' in CONTEXT.config.sections()
 
-    def test_config_setup_raises_exception_on_invalid_config_file(self):
+    def test_config_setup_raises_exception_on_invalid_config_file(self, reset_context_config):
         path = 'not/exists/path'
         args = Namespace(config=path)
 
@@ -44,146 +51,183 @@ url = https://testsite.com
                            match=f'Configuration file "{path}" not found, check the path provided'):
             Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_remote_config_section(self):
+    def test_config_setup_raises_exception_for_missing_application_config_section(self, reset_context_config):
+        with tempfile.NamedTemporaryFile() as config:
+            args = Namespace(config=config.name)
+
+            with pytest.raises(KeyError,
+                               match="Missing 'application' section in the config"):
+                Config(args).setup()
+
+    def test_config_setup_raises_exception_for_missing_application_config_section(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[environment.local]
-url = https://testsite.com
-''')
+                b'''[application]
+                test = test
+                ''')
             config.flush()
-            args = Namespace(config=config.name, execution='selenium_remote', override=None)
+            args = Namespace(config=config.name)
+
+            with pytest.raises(KeyError,
+                               match="Missing 'name' option in the application section in the config"):
+                Config(args).setup()
+
+    def test_config_setup_raises_exception_for_missing_remote_config_section(self, reset_context_config):
+        with tempfile.NamedTemporaryFile() as config:
+            config.write(
+                b'''[application]
+                name = test
+                ''')
+            config.flush()
+            args = Namespace(config=config.name, execution='selenium_remote')
 
             with pytest.raises(KeyError,
                                match='Missing config for execution type of selenium_remote: \[remote_service\]'):
                 Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_selenium_remote_config_option(self):
+    def test_config_setup_raises_exception_for_missing_selenium_remote_config_option(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = "00
-access_key = accesskey
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = "00
+                access_key = accesskey
+                
+                [application]
+                name = test
+                ''')
             config.flush()
-            args = Namespace(config=config.name, execution='selenium_remote', override=None)
+            args = Namespace(config=config.name, execution='selenium_remote')
 
             with pytest.raises(KeyError,
                                match='Missing config for execution type of selenium_remote: \[remote_service\] username'):
                 Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_appium_remote_config_option(self):
+    def test_config_setup_raises_exception_for_missing_appium_remote_config_option(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = "00
-username = username
-access_key = accesskey
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = "00
+                username = username
+                access_key = accesskey
+                
+                [application]
+                name = test
+                ''')
             config.flush()
-            args = Namespace(config=config.name, execution='appium_remote', override=None)
+            args = Namespace(config=config.name, execution='appium_remote')
 
             with pytest.raises(KeyError,
                                match='Missing config for execution type of appium_remote: \[remote_service\] appium_url'):
                 Config(args).setup()
 
 
-    def test_config_setup_raises_exception_for_missing_env_config_section(self):
+    def test_config_setup_raises_exception_for_missing_env_config_section(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-appium_url: eu1.appium.testobject.com/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = 300
-username = username
-access_key = accesskey
-
-[environment.test]
-url = https://testsite.com
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                appium_url: eu1.appium.testobject.com/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = 300
+                username = username
+                access_key = accesskey
+                
+                [application]
+                name = test
+                
+                [environment.test]
+                url = https://testsite.com
+                ''')
             config.flush()
             args = Namespace(config=config.name, execution='selenium_local', environment='local',
-                             browser='chrome', override=None)
+                             browser='chrome')
 
             with pytest.raises(KeyError,
                                match=f'Missing environment config for selected env of local, section required: \[environment.local\]'):
                 Config(args).setup()
 
-    def test_config_setup_adds_all_chosen_env_config_and_removes_others(self):
+    def test_config_setup_adds_all_chosen_env_config_and_removes_others(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-appium_url: eu1.appium.testobject.com/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = 300
-username = username
-access_key = accesskey
-
-[environment.local]
-url = https://testsite.com
-
-[environment.test]
-url = https://testsite.com
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                appium_url: eu1.appium.testobject.com/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = 300
+                username = username
+                access_key = accesskey
+                
+                [application]
+                name = test
+                
+                [environment.local]
+                url = https://testsite.com
+                
+                [environment.test]
+                url = https://testsite.com
+                ''')
             config.flush()
             args = Namespace(config=config.name, execution='selenium_local', environment='local',
                              browser='chrome', override=None)
             Config(args).setup()
 
-            from faf.config import CONFIG
-            assert 'environment.local' not in CONFIG.sections()
-            assert 'environment.test' not in CONFIG.sections()
-            assert 'environment' in CONFIG.sections()
-            assert CONFIG.has_option('environment', 'url')
+            assert 'environment.local' not in CONTEXT.config.sections()
+            assert 'environment.test' not in CONTEXT.config.sections()
+            assert 'environment' in CONTEXT.config.sections()
+            assert CONTEXT.config.has_option('environment', 'url')
 
-    def test_config_setup_overrides_config_when_override_args_provided(self):
+    def test_config_setup_overrides_config_when_override_args_provided(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-appium_url: eu1.appium.testobject.com/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = 300
-username = username
-access_key = accesskey
-
-[environment.local]
-url = https://testsite.com
-
-[environment.test]
-url = https://testsite.com
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                appium_url: eu1.appium.testobject.com/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = 300
+                username = username
+                access_key = accesskey
+                
+                [application]
+                name = test
+                
+                [environment.local]
+                url = https://testsite.com
+                
+                [environment.test]
+                url = https://testsite.com
+                ''')
             config.flush()
             args = Namespace(config=config.name, execution='selenium_local', environment='local', browser='chrome',
                              override=['environment.url=https://new_url.com', 'remote_service.job_timeout=10'])
             Config(args).setup()
 
-            from faf.config import CONFIG
-            assert CONFIG['environment']['url'] == 'https://new_url.com'
-            assert CONFIG['remote_service']['job_timeout'] == '10'
+            assert CONTEXT.config['environment']['url'] == 'https://new_url.com'
+            assert CONTEXT.config['remote_service']['job_timeout'] == '10'
 
-    def test_config_setup_raises_error_when_override_section_not_present(self):
+    def test_config_setup_raises_error_when_override_section_not_present(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-appium_url: eu1.appium.testobject.com/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = 300
-username = username
-access_key = accesskey
-
-[environment.local]
-url = https://testsite.com
-
-[environment.test]
-url = https://testsite.com
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                appium_url: eu1.appium.testobject.com/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = 300
+                username = username
+                access_key = accesskey
+                
+                [application]
+                name = test
+                
+                [environment.local]
+                url = https://testsite.com
+                
+                [environment.test]
+                url = https://testsite.com
+                ''')
             config.flush()
             args = Namespace(config=config.name, execution='selenium_local', environment='local', browser='chrome',
                              override=['nothere.test=test'])
@@ -193,23 +237,26 @@ url = https://testsite.com
                                       " there is no config section of 'nothere'")):
                 Config(args).setup()
 
-    def test_config_setup_raises_error_when_override_option_not_present(self):
+    def test_config_setup_raises_error_when_override_option_not_present(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
-b'''[remote_service]
-selenium_url = ondemand.saucelabs.com:80/wd/hub
-appium_url: eu1.appium.testobject.com/wd/hub
-results_url = https://saucelabs.com/beta/tests
-job_timeout = 300
-username = username
-access_key = accesskey
-
-[environment.local]
-url = https://testsite.com
-
-[environment.test]
-url = https://testsite.com
-''')
+                b'''[remote_service]
+                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                appium_url: eu1.appium.testobject.com/wd/hub
+                results_url = https://saucelabs.com/beta/tests
+                job_timeout = 300
+                username = username
+                access_key = accesskey
+                
+                [application]
+                name = test
+                
+                [environment.local]
+                url = https://testsite.com
+                
+                [environment.test]
+                url = https://testsite.com
+                ''')
             config.flush()
             args = Namespace(config=config.name, execution='selenium_local', environment='local', browser='chrome',
                              override=['environment.test=test'])

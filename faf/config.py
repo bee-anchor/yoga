@@ -1,8 +1,7 @@
 import os
 import configparser
-
-
-CONFIG = None
+from faf.context import CONTEXT
+import pdb
 
 
 class Config(object):
@@ -43,6 +42,10 @@ class Config(object):
             raise FileNotFoundError(f'Configuration file "{self.config_file_path}" not found, check the path provided')
 
     def __validate_config(self):
+        if not self.config.has_section('application'):
+            raise KeyError(f"Missing 'application' section in the config")
+        if not self.config.has_option('application', 'name'):
+            raise KeyError(f"Missing 'name' option in the application section in the config")
         if self.args.execution == 'selenium_remote':
             expected_keys = ['selenium_url', 'results_url', 'job_timeout', 'username', 'access_key']
             for key in expected_keys:
@@ -84,8 +87,7 @@ class Config(object):
                 self.config[section][option] = value
 
     def __set_config(self):
-        global CONFIG
-        CONFIG = self.config
+        CONTEXT.update_config(self.config)
 
 
 
