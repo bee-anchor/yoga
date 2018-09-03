@@ -11,6 +11,7 @@ class Driver(object):
 
     def __init__(self, args):
         self.args = args
+        self.capabilities = None
 
     def get_driver(self):
         if self.args.execution == 'selenium_local':
@@ -18,14 +19,14 @@ class Driver(object):
 
         elif self.args.execution == 'selenium_remote':
             driver = self.__selenium_remote_driver()
-            self.__set_saucelabs_job_name()
+            self.__name_saucelabs_job(driver.session_id)
 
         elif self.args.execution == 'appium_local':
             driver = self.__appium_local_driver()
 
         elif self.args.execution == 'appium_remote':
             driver = self.__appium_remote_driver()
-            self.__set_saucelabs_job_name()
+            self.__name_saucelabs_job(driver.session_id)
 
         elif self.args.execution == 'grid_local':
             driver = self.__grid_local_driver()
@@ -83,6 +84,7 @@ class Driver(object):
         if not caps.has_section(self.args.capability):
             raise KeyError(f'Remote capabilities config does not have section for selection: {self.args.capability}')
         desired_capabilities = dict(caps[self.args.capability])
+        self.capabilities = desired_capabilities
         if driver_type == 'selenium':
             return webdriver.Remote(command_executor, desired_capabilities)
         elif driver_type == 'appium':
@@ -101,9 +103,9 @@ class Driver(object):
         }
         return webdriver.Remote(command_executor, desired_capabilities)
 
-    def __set_saucelabs_job_name(self):
-        name = f"{CONTEXT.config['application']['name']} - {str(CONTEXT.capabilities)}"
-        SauceHelper().update_job_name(name)
+    def __name_saucelabs_job(self, session_id):
+        name = f"{CONTEXT.config['application']['name']} - {str(self.capabilities)}"
+        SauceHelper().update_job_name(session_id, name)
 
 
 

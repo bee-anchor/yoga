@@ -1,7 +1,6 @@
 import os
 import configparser
 from faf.context import CONTEXT
-import pdb
 
 
 class Config(object):

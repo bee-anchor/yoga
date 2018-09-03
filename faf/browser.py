@@ -5,7 +5,7 @@ import random
 
 import logging
 
-from faf.driver import DRIVER
+from faf.context import CONTEXT
 from faf.helpers import Locator
 from faf.waitables import successful_click
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Browser(object):
 
-    def __init__(self, driver=DRIVER):
+    def __init__(self, driver=CONTEXT.driver):
         self.driver = driver
 
     def exit_handler(self):

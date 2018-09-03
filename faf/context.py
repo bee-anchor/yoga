@@ -6,7 +6,6 @@ class Context(object):
             self.args = None
             self.config = None
             self.driver = None
-            self.capabilities = None
 
     instance = None
 
@@ -34,12 +33,6 @@ class Context(object):
 
     def clear_driver(self,):
         self.instance.driver = None
-
-    def update_capabilities(self, caps):
-        self.instance.capabilities = caps
-
-    def clear_capabilities(self):
-        self.instance.capabilities = None
 
 
 CONTEXT = Context()
