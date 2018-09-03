@@ -60,10 +60,10 @@ class Driver(object):
 
     def __appium_local_driver(self):
         command_executor = "http://localhost:4723/wd/hub"
-        # TODO how to handle people's individual capabilities?
-        desired_capabilities = {
-
-        }
+        caps = self.__read_caps_file(self.args.local_capabilities_file)
+        if not caps.has_section(self.args.capability):
+            raise KeyError(f'Local capabilities config does not have section for selection: {self.args.capability}')
+        desired_capabilities = dict(caps[self.args.capability])
         return appium_webdriver.Remote(command_executor, desired_capabilities)
 
     def __remote_driver(self, driver_type):
@@ -71,13 +71,9 @@ class Driver(object):
         username = CONTEXT.config['remote_service']['username']
         access_key = CONTEXT.config['remote_service']['access_key']
         command_executor = f"http://{username}:{access_key}@{url}"
-        caps = configparser.ConfigParser()
-        caps.optionxform = str
         caps_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                       'remote', 'capabilities.ini')
-        caps.read(caps_file_path)
-        print(caps_file_path)
-        print(caps.sections())
+        caps = self.__read_caps_file(caps_file_path)
         if not caps.has_section(self.args.capability):
             raise KeyError(f'Remote capabilities config does not have section for selection: {self.args.capability}')
         desired_capabilities = dict(caps[self.args.capability])
@@ -99,6 +95,13 @@ class Driver(object):
             'browserName': self.args.browser
         }
         return webdriver.Remote(command_executor, desired_capabilities)
+
+    def __read_caps_file(self, file_path):
+        caps = configparser.ConfigParser()
+        caps.optionxform = str
+        caps_file_path = os.path.join(file_path)
+        caps.read(caps_file_path)
+        return caps
 
     def __name_saucelabs_job(self, session_id):
         name = f"{CONTEXT.config['application']['name']} - {str(self.capabilities)}"

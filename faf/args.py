@@ -12,6 +12,7 @@ base_parser.add_argument('-x', '--execution', required=True,
 base_parser.add_argument('-b', '--browser', choices=['chrome', 'firefox', 'internet explorer', 'safari', 'edge'],
                          help='browser to use for a local selenium execution')
 base_parser.add_argument('-p', '--capability', help='which capability to use from relevant capabilities file (remote|local)')
+base_parser.add_argument('-l', '--local-capabilities-file', default="local_capabilities.ini", help='path of local capabilities file (default is local_capabilties.ini)')
 base_parser.add_argument('-s', '--slack_report', action='store_true', help='report test outcome to slack')
 
 faf_nose_argparser = argparse.ArgumentParser(description='Run tests using nose', parents=[base_parser])
