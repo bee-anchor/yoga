@@ -14,19 +14,19 @@ base_parser.add_argument('-b', '--browser', choices=['chrome', 'firefox', 'inter
 base_parser.add_argument('-p', '--capability', help='which capability to use from relevant capabilities file (remote|local)')
 base_parser.add_argument('-s', '--slack_report', action='store_true', help='report test outcome to slack')
 
-nose_parser = argparse.ArgumentParser(description='Run tests using nose', parents=[base_parser])
-nose_parser.add_argument('--test-dir', help='directory containing tests to run')
-nose_parser.add_argument('-n', '--test-names', nargs='+', help='names of tests to run')
-nose_parser.add_argument('-a', '--attributes', nargs='+', help='filter which tests run using attributes')
+faf_nose_argparser = argparse.ArgumentParser(description='Run tests using nose', parents=[base_parser])
+faf_nose_argparser.add_argument('--test-dir', help='directory containing tests to run')
+faf_nose_argparser.add_argument('-n', '--test-names', nargs='+', help='names of tests to run')
+faf_nose_argparser.add_argument('-a', '--attributes', nargs='+', help='filter which tests run using attributes')
 
-pytest_parser = argparse.ArgumentParser(description='Run tests using pytest', parents=[base_parser])
-pytest_parser.add_argument('--test-dir', help='directory containing tests to run')
-pytest_parser.add_argument('-k', '--keyword-expression', help='only run tests which match the given substring expression (same as pytest -k)')
-pytest_parser.add_argument('-m', '--mark-expression', help='only run tests matching given mark expression')
+faf_pytest_argparser = argparse.ArgumentParser(description='Run tests using pytest', parents=[base_parser])
+faf_pytest_argparser.add_argument('--test-dir', help='directory containing tests to run')
+faf_pytest_argparser.add_argument('-k', '--keyword-expression', help='only run tests which match the given substring expression (same as pytest -k)')
+faf_pytest_argparser.add_argument('-m', '--mark-expression', help='only run tests matching given mark expression')
 
-behave_parser = argparse.ArgumentParser(description='Run tests using behave', parents=[base_parser])
-behave_parser.add_argument('--test_dir', required=True, help='directory containing behave tests and steps')
-behave_parser.add_argument('-t', '--tags', help='tags filter for running tests')
+faf_behave_argparser = argparse.ArgumentParser(description='Run tests using behave', parents=[base_parser])
+faf_behave_argparser.add_argument('--test_dir', required=True, help='directory containing behave tests and steps')
+faf_behave_argparser.add_argument('-t', '--tags', help='tags filter for running tests')
 
 
 def arg_validation(args):
@@ -35,6 +35,7 @@ def arg_validation(args):
             raise RuntimeError('When using an execution type of selenium_local or grid_local, a browser must be specified')
         elif args.execution in {'selenium_remote', 'appium_local', 'appium_remote'} and args.capability is None:
             raise RuntimeError('When using an execution type of selenium_remote, appium_local or appium_remote, capability must be specified')
+
 
 def nose_args(args):
     argv = []
@@ -51,6 +52,7 @@ def nose_args(args):
         argv.extend(['-A', args.attributes])
     print(argv)
     return argv
+
 
 def pytest_args(cmd_line_args):
     args = ['-s']
