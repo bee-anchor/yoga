@@ -45,14 +45,11 @@ class Config(object):
             raise KeyError(f"Missing 'application' section in the config")
         if not self.config.has_option('application', 'name'):
             raise KeyError(f"Missing 'name' option in the application section in the config")
-        if self.args.execution == 'selenium_remote':
-            expected_keys = ['selenium_url', 'results_url', 'job_timeout', 'username', 'access_key']
+        if self.args.execution in {'selenium_remote', 'appium_remote'}:
+            expected_keys = ['remote_url', 'results_url', 'job_timeout', 'username', 'access_key']
             for key in expected_keys:
                 if not self.config.has_option('remote_service', key):
-                    raise KeyError(f'Missing config for execution type of selenium_remote: [remote_service] {key}')
-        elif self.args.execution == 'appium_remote':
-            if not self.config.has_option('remote_service', 'appium_url'):
-                raise KeyError(f'Missing config for execution type of appium_remote: [remote_service] appium_url')
+                    raise KeyError(f'Missing config for execution type of selenium_remote/appium_remote: [remote_service] {key}')
 
     def __set_env_config(self):
         if not self.config.has_section(f'environment.{self.args.environment}'):

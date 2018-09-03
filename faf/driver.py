@@ -67,10 +67,7 @@ class Driver(object):
         return appium_webdriver.Remote(command_executor, desired_capabilities)
 
     def __remote_driver(self, driver_type):
-        if driver_type == 'selenium':
-            url = CONTEXT.config['remote_service']['selenium_url']
-        elif driver_type == 'appium':
-            url = CONTEXT.config['remote_service']['appium_url']
+        url = CONTEXT.config['remote_service']['remote_url']
         username = CONTEXT.config['remote_service']['username']
         access_key = CONTEXT.config['remote_service']['access_key']
         command_executor = f"http://{username}:{access_key}@{url}"

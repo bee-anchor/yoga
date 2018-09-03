@@ -16,8 +16,7 @@ class TestConfig():
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
-                appium_url: eu1.appium.testobject.com/wd/hub
+                remote_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = 300
                 username = username
@@ -82,14 +81,14 @@ class TestConfig():
             args = Namespace(config=config.name, execution='selenium_remote')
 
             with pytest.raises(KeyError,
-                               match='Missing config for execution type of selenium_remote: \[remote_service\]'):
+                               match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\]'):
                 Config(args).setup()
 
     def test_config_setup_raises_exception_for_missing_selenium_remote_config_option(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
+                remote_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = "00
                 access_key = accesskey
@@ -101,14 +100,13 @@ class TestConfig():
             args = Namespace(config=config.name, execution='selenium_remote')
 
             with pytest.raises(KeyError,
-                               match='Missing config for execution type of selenium_remote: \[remote_service\] username'):
+                               match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\] username'):
                 Config(args).setup()
 
     def test_config_setup_raises_exception_for_missing_appium_remote_config_option(self, reset_context_config):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = "00
                 username = username
@@ -121,7 +119,7 @@ class TestConfig():
             args = Namespace(config=config.name, execution='appium_remote')
 
             with pytest.raises(KeyError,
-                               match='Missing config for execution type of appium_remote: \[remote_service\] appium_url'):
+                               match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\] remote_url'):
                 Config(args).setup()
 
 
@@ -129,8 +127,7 @@ class TestConfig():
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
-                appium_url: eu1.appium.testobject.com/wd/hub
+                remote_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = 300
                 username = username
@@ -154,8 +151,7 @@ class TestConfig():
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
-                appium_url: eu1.appium.testobject.com/wd/hub
+                remote_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = 300
                 username = username
@@ -184,8 +180,7 @@ class TestConfig():
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
-                appium_url: eu1.appium.testobject.com/wd/hub
+                remote_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = 300
                 username = username
@@ -212,8 +207,7 @@ class TestConfig():
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
-                appium_url: eu1.appium.testobject.com/wd/hub
+                remote_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = 300
                 username = username
@@ -241,8 +235,7 @@ class TestConfig():
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
-                selenium_url = ondemand.saucelabs.com:80/wd/hub
-                appium_url: eu1.appium.testobject.com/wd/hub
+                remote_url = ondemand.saucelabs.com:80/wd/hub
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = 300
                 username = username

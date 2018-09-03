@@ -32,9 +32,9 @@ faf_behave_argparser.add_argument('-t', '--tags', help='tags filter for running 
 def arg_validation(args):
     if args.execution != 'non-ui':
         if args.execution in {'selenium_local', 'grid_local'} and args.browser is None:
-            raise RuntimeError('When using an execution type of selenium_local or grid_local, a browser must be specified')
+            raise RuntimeError('When using an execution type of selenium_local or grid_local, a browser must be specified (-b)')
         elif args.execution in {'selenium_remote', 'appium_local', 'appium_remote'} and args.capability is None:
-            raise RuntimeError('When using an execution type of selenium_remote, appium_local or appium_remote, capability must be specified')
+            raise RuntimeError('When using an execution type of selenium_remote, appium_local or appium_remote, capability must be specified (-p)')
 
 
 def nose_args(args):

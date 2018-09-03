@@ -50,7 +50,7 @@ class TestDriver:
     def test_create_remote_selenium_driver(self):
         test_config = configparser.ConfigParser()
         test_config.add_section('remote_service')
-        test_config.set('remote_service', 'selenium_url', 'selenium.com')
+        test_config.set('remote_service', 'remote_url', 'selenium.com')
         test_config.set('remote_service', 'username', 'test')
         test_config.set('remote_service', 'access_key', 'test')
         test_config.add_section('application')
@@ -63,7 +63,7 @@ class TestDriver:
             'version': '68.0'
         }
 
-        with patch.object(faf.driver.Driver, '_Driver__set_saucelabs_job_name') as patched_set_saucelabs_name:
+        with patch.object(faf.driver.Driver, '_Driver__name_saucelabs_job') as patched_set_saucelabs_name:
             faf.driver.Driver(args).get_driver()
             patched_set_saucelabs_name.assert_called_once()
 
@@ -72,7 +72,7 @@ class TestDriver:
     def test_create_remote_appium_driver(self):
         test_config = configparser.ConfigParser()
         test_config.add_section('remote_service')
-        test_config.set('remote_service', 'appium_url', 'appium.com')
+        test_config.set('remote_service', 'remote_url', 'appium.com')
         test_config.set('remote_service', 'username', 'test')
         test_config.set('remote_service', 'access_key', 'test')
         test_config.add_section('application')
@@ -88,7 +88,7 @@ class TestDriver:
             'platformName': 'Android'
         }
 
-        with patch.object(faf.driver.Driver, '_Driver__set_saucelabs_job_name') as patched_set_saucelabs_name:
+        with patch.object(faf.driver.Driver, '_Driver__name_saucelabs_job') as patched_set_saucelabs_name:
             faf.driver.Driver(args).get_driver()
             patched_set_saucelabs_name.assert_called_once()
 
@@ -103,7 +103,7 @@ class TestDriver:
     def test_raises_error_when_remote_and_unknown_capability(self):
         test_config = configparser.ConfigParser()
         test_config.add_section('remote_service')
-        test_config.set('remote_service', 'selenium_url', 'appium.com')
+        test_config.set('remote_service', 'remote_url', 'appium.com')
         test_config.set('remote_service', 'username', 'test')
         test_config.set('remote_service', 'access_key', 'test')
         faf.driver.CONTEXT.config = test_config
