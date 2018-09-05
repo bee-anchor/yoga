@@ -19,19 +19,15 @@ class Context(object):
     def update_args(self, args):
         self.instance.args = args
 
-    def clear_args(self):
-        self.instance.args = None
-
     def update_config(self, config):
         self.instance.config = config
-
-    def clear_config(self):
-        self.instance.config = None
 
     def update_driver(self, driver):
         self.instance.driver = driver
 
-    def clear_driver(self,):
+    def clear_context(self):
+        self.instance.args = None
+        self.instance.config = None
         self.instance.driver = None
 
 

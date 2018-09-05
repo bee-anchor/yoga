@@ -88,7 +88,7 @@ class Driver(object):
 
 
     def __name_saucelabs_job(self, session_id):
-        caps = Capabilities(self.args).get_formatted_remote_capabilties()
+        caps = Capabilities(self.args).get_formatted_remote_capabilities()
         name = f"{CONTEXT.config['application']['name']} - {caps}"
         SauceHelper().update_job_name(session_id, name)
 

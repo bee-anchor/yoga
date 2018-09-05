@@ -1,10 +1,9 @@
 import faf.slack_reporter
 import configparser
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
 
 class TestSlackReporter:
-
 
     test_config = configparser.ConfigParser()
     test_config.add_section('remote_service')
@@ -12,21 +11,13 @@ class TestSlackReporter:
     test_config.add_section('application')
     test_config.set('application', 'name', 'test')
 
-
     @patch('faf.slack_reporter.requests')
-    @patch.object(faf.slack_reporter.Capabilities, 'get_formatted_remote_capabilties', lambda x: 'browserName: chrome, platform: Windows 10, version: 68.0')
+    @patch.object(faf.slack_reporter.Capabilities, 'get_formatted_remote_capabilities', lambda x: 'browserName: chrome, platform: Windows 10, version: 68.0')
     @patch('faf.slack_reporter.CONTEXT')
     def test_report_test_failure(self, mock_context, mock_requests):
         mock_context.config = self.test_config
-
-        mock_context.driver = MagicMock()
         mock_context.driver.session_id = '1234'
-
-        mock_context.args = MagicMock()
         mock_context.args.environment = 'test'
-
-        request_post_mock = MagicMock()
-        mock_requests.post = request_post_mock
 
         slack_reporter = faf.slack_reporter.SlackReporter("https://test_url.test")
         slack_reporter.report_test_failure()
@@ -52,7 +43,7 @@ class TestSlackReporter:
                 }
             ]
         }
-        request_post_mock.assert_called_with("https://test_url.test",
+        mock_requests.post.assert_called_with("https://test_url.test",
                                                   json=expected_payload,
                                                   headers={'Content-Type': 'application/json'}
                                                   )

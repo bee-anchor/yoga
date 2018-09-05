@@ -7,10 +7,10 @@ class Capabilities:
     def __init__(self, args):
         self.args = args
 
-    def get_formatted_remote_capabilties(self):
+    def get_formatted_remote_capabilities(self):
         return self.__format_caps(self.get_remote_capabilities())
 
-    def get_formatted_local_capabilties(self):
+    def get_formatted_local_capabilities(self):
         return self.__format_caps(self.get_local_capabilities())
 
     def get_local_capabilities(self):

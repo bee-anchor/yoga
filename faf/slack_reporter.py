@@ -8,7 +8,7 @@ class SlackReporter:
         self.url = webhook_url
 
     def report_test_failure(self):
-        caps = Capabilities(CONTEXT.args).get_formatted_remote_capabilties()
+        caps = Capabilities(CONTEXT.args).get_formatted_remote_capabilities()
         payload = {
            "attachments": [
               {
