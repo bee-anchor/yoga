@@ -1,6 +1,6 @@
 import requests
 from faf.context import CONTEXT
-from faf.capabilties import Capabilities
+from faf.capabilities import Capabilities
 
 class SlackReporter:
 

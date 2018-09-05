@@ -3,7 +3,7 @@ from appium import webdriver as appium_webdriver
 import atexit
 from faf.context import CONTEXT
 from faf.remote.sauce_helper import SauceHelper
-from faf.capabilties import Capabilities
+from faf.capabilities import Capabilities
 
 
 class Driver(object):
