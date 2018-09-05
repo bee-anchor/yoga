@@ -32,8 +32,7 @@ class Capabilities:
     def __read_caps_file(file_path):
         caps = configparser.ConfigParser()
         caps.optionxform = str
-        caps_file_path = os.path.join(file_path)
-        caps.read(caps_file_path)
+        caps.read(file_path)
         return caps
 
     @staticmethod
