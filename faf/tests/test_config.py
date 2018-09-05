@@ -7,12 +7,7 @@ import tempfile
 
 class TestConfig():
 
-    @pytest.fixture()
-    def reset_context_config(self):
-        CONTEXT.clear_config()
-        yield
-
-    def test_config_setup_with_valid_args_sets_the_global_config(self, reset_context_config):
+    def test_config_setup_with_valid_args_sets_the_global_config(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
@@ -42,7 +37,7 @@ class TestConfig():
             assert 'remote_service' in CONTEXT.config.sections()
             assert 'environment' in CONTEXT.config.sections()
 
-    def test_config_setup_raises_exception_on_invalid_config_file(self, reset_context_config):
+    def test_config_setup_raises_exception_on_invalid_config_file(self):
         path = 'not/exists/path'
         args = Namespace(config=path)
 
@@ -50,7 +45,7 @@ class TestConfig():
                            match=f'Configuration file "{path}" not found, check the path provided'):
             Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_application_config_section(self, reset_context_config):
+    def test_config_setup_raises_exception_for_missing_application_config_section(self):
         with tempfile.NamedTemporaryFile() as config:
             args = Namespace(config=config.name)
 
@@ -58,7 +53,7 @@ class TestConfig():
                                match="Missing 'application' section in the config"):
                 Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_application_config_section(self, reset_context_config):
+    def test_config_setup_raises_exception_for_missing_application_config_section(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[application]
@@ -71,7 +66,7 @@ class TestConfig():
                                match="Missing 'name' option in the application section in the config"):
                 Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_remote_config_section(self, reset_context_config):
+    def test_config_setup_raises_exception_for_missing_remote_config_section(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[application]
@@ -84,7 +79,7 @@ class TestConfig():
                                match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\]'):
                 Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_selenium_remote_config_option(self, reset_context_config):
+    def test_config_setup_raises_exception_for_missing_selenium_remote_config_option(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
@@ -103,7 +98,7 @@ class TestConfig():
                                match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\] username'):
                 Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_appium_remote_config_option(self, reset_context_config):
+    def test_config_setup_raises_exception_for_missing_appium_remote_config_option(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
@@ -123,7 +118,7 @@ class TestConfig():
                 Config(args).setup()
 
 
-    def test_config_setup_raises_exception_for_missing_env_config_section(self, reset_context_config):
+    def test_config_setup_raises_exception_for_missing_env_config_section(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
@@ -147,7 +142,7 @@ class TestConfig():
                                match=f'Missing environment config for selected env of local, section required: \[environment.local\]'):
                 Config(args).setup()
 
-    def test_config_setup_adds_all_chosen_env_config_and_removes_others(self, reset_context_config):
+    def test_config_setup_adds_all_chosen_env_config_and_removes_others(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
@@ -176,7 +171,7 @@ class TestConfig():
             assert 'environment' in CONTEXT.config.sections()
             assert CONTEXT.config.has_option('environment', 'url')
 
-    def test_config_setup_overrides_config_when_override_args_provided(self, reset_context_config):
+    def test_config_setup_overrides_config_when_override_args_provided(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
@@ -203,7 +198,7 @@ class TestConfig():
             assert CONTEXT.config['environment']['url'] == 'https://new_url.com'
             assert CONTEXT.config['remote_service']['job_timeout'] == '10'
 
-    def test_config_setup_raises_error_when_override_section_not_present(self, reset_context_config):
+    def test_config_setup_raises_error_when_override_section_not_present(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
@@ -231,7 +226,7 @@ class TestConfig():
                                       " there is no config section of 'nothere'")):
                 Config(args).setup()
 
-    def test_config_setup_raises_error_when_override_option_not_present(self, reset_context_config):
+    def test_config_setup_raises_error_when_override_option_not_present(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[remote_service]
