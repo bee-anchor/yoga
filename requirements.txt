@@ -1,4 +1,6 @@
+requests==2.19.1
 Appium-Python-Client==0.28
 selenium==3.14.0
 urllib3==1.23
+colorama==0.3.9
 sauceclient=1.0.0

@@ -1,17 +1,15 @@
 from selenium import webdriver
 from appium import webdriver as appium_webdriver
 import atexit
-import os
-import configparser
 from faf.context import CONTEXT
 from faf.remote.sauce_helper import SauceHelper
+from faf.capabilties import Capabilities
 
 
 class Driver(object):
 
     def __init__(self, args):
         self.args = args
-        self.capabilities = None
 
     def get_driver(self):
         if self.args.execution == 'selenium_local':
@@ -60,10 +58,7 @@ class Driver(object):
 
     def __appium_local_driver(self):
         command_executor = "http://localhost:4723/wd/hub"
-        caps = self.__read_caps_file(self.args.local_capabilities_file)
-        if not caps.has_section(self.args.capability):
-            raise KeyError(f'Local capabilities config does not have section for selection: {self.args.capability}')
-        desired_capabilities = dict(caps[self.args.capability])
+        desired_capabilities = Capabilities(self.args).get_local_capabilities()
         return appium_webdriver.Remote(command_executor, desired_capabilities)
 
     def __remote_driver(self, driver_type):
@@ -71,12 +66,7 @@ class Driver(object):
         username = CONTEXT.config['remote_service']['username']
         access_key = CONTEXT.config['remote_service']['access_key']
         command_executor = f"http://{username}:{access_key}@{url}"
-        caps_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                      'remote', 'capabilities.ini')
-        caps = self.__read_caps_file(caps_file_path)
-        if not caps.has_section(self.args.capability):
-            raise KeyError(f'Remote capabilities config does not have section for selection: {self.args.capability}')
-        desired_capabilities = dict(caps[self.args.capability])
+        desired_capabilities = Capabilities(self.args).get_remote_capabilities()
         self.capabilities = desired_capabilities
         if driver_type == 'selenium':
             return webdriver.Remote(command_executor, desired_capabilities)
@@ -96,15 +86,10 @@ class Driver(object):
         }
         return webdriver.Remote(command_executor, desired_capabilities)
 
-    def __read_caps_file(self, file_path):
-        caps = configparser.ConfigParser()
-        caps.optionxform = str
-        caps_file_path = os.path.join(file_path)
-        caps.read(caps_file_path)
-        return caps
 
     def __name_saucelabs_job(self, session_id):
-        name = f"{CONTEXT.config['application']['name']} - {str(self.capabilities)}"
+        caps = Capabilities(self.args).get_formatted_remote_capabilties()
+        name = f"{CONTEXT.config['application']['name']} - {caps}"
         SauceHelper().update_job_name(session_id, name)
 
 
