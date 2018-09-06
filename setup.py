@@ -11,7 +11,8 @@ setup(name='faf', version='0.1', description='flexible automation framework',
         'urllib3==1.23',
         'colorama==0.3.9',
         'sauceclient==1.0.0',
-        'requests==2.19.1'
+        'requests==2.19.1',
+        'pytest==3.7.3'
       ],
       setup_requires=["pytest-runner"],
       tests_require=["pytest"]
