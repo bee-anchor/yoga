@@ -35,6 +35,9 @@ class Browser(object):
     def get_elements(self, locator: Locator):
         return self.driver.find_elements(*locator)
 
+    def get_element_text(self, locator: Locator):
+        return self.driver.find_element(*locator).text
+
     def fill_txtbox(self, locator: Locator, text):
         self.driver.find_element(*locator).clear()
         self.driver.find_element(*locator).send_keys(text)
