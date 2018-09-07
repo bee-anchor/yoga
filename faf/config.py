@@ -6,7 +6,7 @@ from faf.context import CONTEXT
 class Config(object):
 
     def __init__(self, args):
-        self.config_file_path = args.config
+        self.config_file_path = os.path.abspath(args.config)
         self.args = args
         self.config = None
 
