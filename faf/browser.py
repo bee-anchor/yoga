@@ -1,15 +1,12 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 import random
-
-import logging
+from time import sleep
 
 from faf.context import CONTEXT
 from faf.helpers import Locator
-from faf.waitables import successful_click, element_to_be_present_with_text, element_to_be_present_with_regex
-
-logger = logging.getLogger(__name__)
+from faf import waitables
 
 
 class Browser(object):
@@ -24,7 +21,11 @@ class Browser(object):
         self.driver.get(url)
 
     def click(self, locator: Locator):
-        self.driver.find_element(*locator).click()
+        try:
+            self.driver.find_element(*locator).click()
+        except StaleElementReferenceException:
+            sleep(0.5)
+            self.driver.find_element(*locator).click()
 
     def click_random(self, locator: Locator):
         random.choice(self.driver.find_elements(*locator)).click()
@@ -60,14 +61,19 @@ class Browser(object):
             expected_conditions.visibility_of_element_located(locator)
         )
 
+    def wait_until_exists_any(self, locators, timeout=10):
+        WebDriverWait(self.driver, timeout).until(
+            waitables.visibility_of_any_element_located(locators)
+        )
+
     def wait_until_exists_with_text(self, locator: Locator, text, timeout=10):
         WebDriverWait(self.driver, timeout).until(
-            element_to_be_present_with_text(locator, text)
+            waitables.element_to_be_present_with_text(locator, text)
         )
 
     def wait_until_exists_with_regex(self, locator: Locator, regex, timeout=10):
         WebDriverWait(self.driver, timeout).until(
-            element_to_be_present_with_regex(locator, regex)
+            waitables.element_to_be_present_with_regex(locator, regex)
         )
 
     def wait_until_not_exists(self, locator: Locator, timeout=10):
@@ -76,7 +82,7 @@ class Browser(object):
         )
 
     def retrying_click(self, locator: Locator, timeout=10):
-        WebDriverWait(self.driver, timeout).until(successful_click(locator))
+        WebDriverWait(self.driver, timeout).until(waitables.successful_click(locator))
 
     def exists(self, locator: Locator):
         try:
@@ -84,3 +90,21 @@ class Browser(object):
             return True
         except NoSuchElementException:
             return False
+
+    def displayed(self, locator: Locator):
+        try:
+            elem = self.driver.find_element(*locator)
+            if elem.is_displayed():
+                return True
+        except (NoSuchElementException, StaleElementReferenceException):
+            return False
+        return False
+
+    def scroll_up_by(self, pixels):
+        self.driver.execute_script(f"window.scrollTo(window.scrollX, window.scrollY - {pixels})")
+
+    def scroll_down_by(self, pixels):
+        self.driver.execute_script(f"window.scrollTo(window.scrollX, window.scrollY + {pixels})")
+
+    def is_mobile_device(self):
+        return 'platformName' in self.driver.capabilities

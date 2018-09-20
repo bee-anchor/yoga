@@ -1,4 +1,4 @@
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from time import sleep
 import re
 
@@ -9,7 +9,7 @@ import re
 
 class successful_click(object):
     """ An expectation for checking that a click to an element was successful.
-    element - locator used to find the element
+    locator - used to find the element
     returns if the click was successful
     """
 
@@ -28,7 +28,8 @@ class successful_click(object):
 class element_to_be_present_with_text(object):
     """ An expectation for checking if and element exists with the given
     text.
-    locator, text
+    locator - used to find the element
+    text - what must match the elements text
     """
     def __init__(self, locator, text):
         self.locator = locator
@@ -45,7 +46,8 @@ class element_to_be_present_with_text(object):
 class element_to_be_present_with_regex(object):
     """ An expectation for checking if and element exists with text that
     matches the given regex.
-    locator, text
+    locator - used to find the elements
+    regex - expession to match to element text
     """
     def __init__(self, locator, regex):
         self.locator = locator
@@ -56,4 +58,21 @@ class element_to_be_present_with_regex(object):
         for elem in elements:
             if re.search(self.regex, elem.text):
                 return True
+        return False
+
+class visibility_of_any_element_located(object):
+    """ An expectation for checking if any given element exists on the page
+
+    """
+    def __init__(self, locators):
+        self.locators = locators
+
+    def __call__(self, driver):
+        for locator in self.locators:
+            try:
+                elem = driver.find_element(*locator)
+                if elem.is_displayed():
+                    return True
+            except (NoSuchElementException, StaleElementReferenceException):
+                continue
         return False

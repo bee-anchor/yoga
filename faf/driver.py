@@ -67,6 +67,7 @@ class Driver(object):
         access_key = CONTEXT.config['remote_service']['access_key']
         command_executor = f"http://{username}:{access_key}@{url}"
         desired_capabilities = Capabilities(self.args).get_remote_capabilities()
+        desired_capabilities['idleTimeout'] = CONTEXT.config['remote_service']['job_timeout']
         self.capabilities = desired_capabilities
         if driver_type == 'selenium':
             return webdriver.Remote(command_executor, desired_capabilities)
