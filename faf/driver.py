@@ -43,7 +43,9 @@ class Driver(object):
         if CONTEXT.driver is not None:
             CONTEXT.driver.quit()
 
-        CONTEXT.update_driver(self.get_driver())
+        driver = self.get_driver()
+        driver.set_page_load_timeout(30)
+        CONTEXT.update_driver(driver)
 
     def __selenium_local_driver(self):
         browser_mapping = {
