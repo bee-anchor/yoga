@@ -107,7 +107,7 @@ class Browser(object):
         self.driver.execute_script(f"window.scrollTo(window.scrollX, window.scrollY + {pixels})")
 
     def is_mobile_device(self):
-        return 'platformName' in self.driver.capabilities
+        return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] in ['Android', 'iOS']
 
     def retry_until_true(self, action_func, predicate_func, timeout=10):
         current_time = time()
