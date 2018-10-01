@@ -18,10 +18,10 @@ class successful_click(object):
 
     def __call__(self, driver):
         try:
-            sleep(1)
             driver.find_element(*self.locator).click()
             return True
         except NoSuchElementException:
+            sleep(0.5)
             return False
 
 
@@ -59,6 +59,7 @@ class element_to_be_present_with_regex(object):
             if re.search(self.regex, elem.text):
                 return True
         return False
+
 
 class visibility_of_any_element_located(object):
     """ An expectation for checking if any given element exists on the page

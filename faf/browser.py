@@ -2,7 +2,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 import random
-from time import sleep
+from time import sleep, time
 
 from faf.context import CONTEXT
 from faf.helpers import Locator
@@ -29,6 +29,9 @@ class Browser(object):
 
     def click_random(self, locator: Locator):
         random.choice(self.driver.find_elements(*locator)).click()
+
+    def retrying_click(self, locator: Locator, timeout=10):
+        WebDriverWait(self.driver, timeout).until(waitables.successful_click(locator))
 
     def get_element(self, locator: Locator):
         return self.driver.find_element(*locator)
@@ -81,9 +84,6 @@ class Browser(object):
             expected_conditions.invisibility_of_element_located(locator)
         )
 
-    def retrying_click(self, locator: Locator, timeout=10):
-        WebDriverWait(self.driver, timeout).until(waitables.successful_click(locator))
-
     def exists(self, locator: Locator):
         try:
             self.driver.find_element(*locator)
@@ -108,3 +108,14 @@ class Browser(object):
 
     def is_mobile_device(self):
         return 'platformName' in self.driver.capabilities
+
+    def retry_until_true(self, action_func, predicate_func, timeout=10):
+        current_time = time()
+        until_time = current_time + timeout
+        while time() < until_time:
+            sleep(0.5)
+            if not predicate_func():
+                action_func()
+            else:
+                return
+        raise TimeoutError("timeout waiting for predicate to become true")
