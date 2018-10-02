@@ -112,9 +112,10 @@ class Browser(object):
     def retry_until_true(self, action_func, predicate_func, timeout=10):
         current_time = time()
         until_time = current_time + timeout
+        action_func()
         while time() < until_time:
-            sleep(0.5)
             if not predicate_func():
+                sleep(0.5)
                 action_func()
             else:
                 return
