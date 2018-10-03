@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
@@ -21,10 +22,7 @@ class Browser(object):
         self.driver.get(url)
 
     def click(self, locator: Locator):
-        try:
-            self.driver.find_element(*locator).click()
-        except StaleElementReferenceException:
-            sleep(0.5)
+        with self.handle_staleness():
             self.driver.find_element(*locator).click()
 
     def click_random(self, locator: Locator):
@@ -34,13 +32,15 @@ class Browser(object):
         WebDriverWait(self.driver, timeout).until(waitables.successful_click(locator))
 
     def get_element(self, locator: Locator):
-        return self.driver.find_element(*locator)
+        with self.handle_staleness():
+            return self.driver.find_element(*locator)
 
     def get_elements(self, locator: Locator):
         return self.driver.find_elements(*locator)
 
     def get_element_text(self, locator: Locator):
-        return self.driver.find_element(*locator).text
+        with self.handle_staleness():
+            return self.driver.find_element(*locator).text
 
     def get_element_with_text(self, locator: Locator, text):
         elements = self.driver.find_elements(*locator)
@@ -50,8 +50,9 @@ class Browser(object):
         raise NoSuchElementException(f'Unable to find element with selector of {locator.selector} and text of {text}')
 
     def fill_txtbox(self, locator: Locator, text):
-        self.driver.find_element(*locator).clear()
-        self.driver.find_element(*locator).send_keys(text)
+        with self.handle_staleness():
+            self.driver.find_element(*locator).clear()
+            self.driver.find_element(*locator).send_keys(text)
 
     def switch_to_frame(self, locator: Locator):
         self.driver.switch_to.frame(self.driver.find_element(*locator))
@@ -109,14 +110,43 @@ class Browser(object):
     def is_mobile_device(self):
         return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] in ['Android', 'iOS']
 
-    def retry_until_true(self, action_func, predicate_func, timeout=10):
-        current_time = time()
-        until_time = current_time + timeout
+    def is_safari(self):
+        return 'browserName' in self.driver.capabilities and self.driver.capabilities['browserName'] in ['Safari', 'safari']
+
+    @staticmethod
+    def retry_until_true(action_func, predicate_func, timeout=10):
+        start_time = time()
         action_func()
-        while time() < until_time:
+        while time() < start_time + timeout:
+            sleep(0.5)
             if not predicate_func():
-                sleep(0.5)
                 action_func()
             else:
                 return
         raise TimeoutError("timeout waiting for predicate to become true")
+
+    @staticmethod
+    def wait_for(condition_function, timeout=10):
+        start_time = time()
+        while time() < start_time + timeout:
+            if condition_function():
+                return True
+            else:
+                sleep(0.1)
+        raise Exception(
+            'Timeout waiting for {}'.format(condition_function.__name__)
+        )
+
+    @contextmanager
+    def wait_for_page_load(self, timeout=10):
+        old_page = self.driver.find_element_by_tag_name('html')
+        yield
+        WebDriverWait(self.driver, timeout=timeout).until(expected_conditions.staleness_of(old_page))
+
+    @contextmanager
+    def handle_staleness(self, retry_pause=0.5):
+        try:
+            yield
+        except StaleElementReferenceException:
+            sleep(retry_pause)
+            yield
