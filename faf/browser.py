@@ -107,6 +107,9 @@ class Browser(object):
     def scroll_down_by(self, pixels):
         self.driver.execute_script(f"window.scrollTo(window.scrollX, window.scrollY + {pixels})")
 
+    def scroll_y_to(self, loc):
+        self.driver.execute_script(f"window.scrollTo(window.scrollX, {loc})")
+
     def is_mobile_device(self):
         return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] in ['Android', 'iOS']
 
