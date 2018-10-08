@@ -3,11 +3,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 import random
+from functools import wraps
 from time import sleep, time
 
 from faf.context import CONTEXT
 from faf.helpers import Locator
 from faf import waitables
+
+
+def handle_staleness(retry_pause=0.5):
+    def staleness_decorator(func):
+        @wraps(func)
+        def func_wrapped(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except StaleElementReferenceException:
+                sleep(retry_pause)
+                func(*args, **kwargs)
+        return func_wrapped
+    return staleness_decorator
 
 
 class Browser(object):
@@ -23,9 +37,9 @@ class Browser(object):
     def navigate_to(self, url):
         self.driver.get(url)
 
+    @handle_staleness()
     def click(self, locator: Locator):
-        with self.handle_staleness():
-            self.driver.find_element(*locator).click()
+        self.driver.find_element(*locator).click()
 
     def click_random(self, locator: Locator):
         random.choice(self.driver.find_elements(*locator)).click()
@@ -33,16 +47,16 @@ class Browser(object):
     def retrying_click(self, locator: Locator, timeout=10):
         WebDriverWait(self.driver, timeout).until(waitables.successful_click(locator))
 
+    @handle_staleness()
     def get_element(self, locator: Locator):
-        with self.handle_staleness():
-            return self.driver.find_element(*locator)
+        return self.driver.find_element(*locator)
 
     def get_elements(self, locator: Locator):
         return self.driver.find_elements(*locator)
 
+    @handle_staleness()
     def get_element_text(self, locator: Locator):
-        with self.handle_staleness():
-            return self.driver.find_element(*locator).text
+        return self.driver.find_element(*locator).text
 
     def get_element_with_text(self, locator: Locator, text):
         elements = self.driver.find_elements(*locator)
@@ -51,10 +65,10 @@ class Browser(object):
                 return elem
         raise NoSuchElementException(f'Unable to find element with selector of {locator.selector} and text of {text}')
 
+    @handle_staleness()
     def fill_txtbox(self, locator: Locator, text):
-        with self.handle_staleness():
-            self.driver.find_element(*locator).clear()
-            self.driver.find_element(*locator).send_keys(text)
+        self.driver.find_element(*locator).clear()
+        self.driver.find_element(*locator).send_keys(text)
 
     def switch_to_frame(self, locator: Locator):
         self.driver.switch_to.frame(self.driver.find_element(*locator))
@@ -147,11 +161,3 @@ class Browser(object):
         old_page = self.driver.find_element_by_tag_name('html')
         yield
         WebDriverWait(self.driver, timeout=timeout).until(expected_conditions.staleness_of(old_page))
-
-    @contextmanager
-    def handle_staleness(self, retry_pause=0.5):
-        try:
-            yield
-        except StaleElementReferenceException:
-            sleep(retry_pause)
-            yield
