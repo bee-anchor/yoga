@@ -42,6 +42,7 @@ class Driver(object):
     def set_driver(self):
         if CONTEXT.driver is not None:
             CONTEXT.driver.quit()
+            atexit.unregister(CONTEXT.driver.quit)
 
         driver = self.get_driver()
         driver.set_page_load_timeout(30)

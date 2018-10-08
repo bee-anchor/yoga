@@ -12,8 +12,10 @@ from faf import waitables
 
 class Browser(object):
 
-    def __init__(self, driver=CONTEXT.driver):
-        self.driver = driver
+    def _get_driver(self):
+        return CONTEXT.driver
+
+    driver = property(_get_driver)
 
     def exit_handler(self):
         self.driver.quit()
