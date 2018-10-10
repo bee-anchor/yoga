@@ -36,10 +36,13 @@ class element_to_be_present_with_text(object):
         self.text = text
 
     def __call__(self, driver):
-        elements = driver.find_elements(*self.locator)
-        for elem in elements:
-            if elem.text == self.text:
-                return True
+        try:
+            elements = driver.find_elements(*self.locator)
+            for elem in elements:
+                if elem.text == self.text:
+                    return True
+        except (NoSuchElementException, StaleElementReferenceException):
+            pass
         return False
 
 
@@ -54,10 +57,13 @@ class element_to_be_present_with_regex(object):
         self.regex = regex
 
     def __call__(self, driver):
-        elements = driver.find_elements(*self.locator)
-        for elem in elements:
-            if re.search(self.regex, elem.text):
-                return True
+        try:
+            elements = driver.find_elements(*self.locator)
+            for elem in elements:
+                if re.search(self.regex, elem.text):
+                    return True
+        except (NoSuchElementException, StaleElementReferenceException):
+            pass
         return False
 
 
