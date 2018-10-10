@@ -16,10 +16,10 @@ def handle_staleness(retry_pause=0.5):
         @wraps(func)
         def func_wrapped(*args, **kwargs):
             try:
-                func(*args, **kwargs)
+                return func(*args, **kwargs)
             except StaleElementReferenceException:
                 sleep(retry_pause)
-                func(*args, **kwargs)
+                return func(*args, **kwargs)
         return func_wrapped
     return staleness_decorator
 
