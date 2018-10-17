@@ -56,7 +56,10 @@ class Config(object):
             raise KeyError(
                 (f'Missing environment config for selected env of {self.args.environment},'
                  f' section required: [environment.{self.args.environment}]'))
-        env_config = self.config.items(f'environment.{self.args.environment}')
+        try:
+            env_config = self.config.items(f'environment.{self.args.environment}')
+        except configparser.InterpolationMissingOptionError:
+            env_config = self.config.items(f'environment.{self.args.environment}', raw=True)
         self.__remove_env_config()
         self.config.add_section('environment')
         for key, value in env_config:
