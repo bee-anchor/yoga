@@ -56,7 +56,7 @@ def nose_args(args):
 
 
 def pytest_args(cmd_line_args):
-    args = ['-s']
+    args = ['-s', '--tb=short']
     # add test directory location if specified, else the default location
     if cmd_line_args.test_dir:
         args.append(cmd_line_args.test_dir)
