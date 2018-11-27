@@ -13,7 +13,8 @@ setup(name='faf', version='0.1', description='flexible automation framework',
         'sauceclient==1.0.0',
         'requests==2.19.1',
         'pytest==3.7.3',
-        'assertpy==0.14'
+        'assertpy==0.14',
+        'ipdb==0.11'
       ],
       setup_requires=["pytest-runner"],
       tests_require=["pytest"]
