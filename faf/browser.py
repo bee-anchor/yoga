@@ -24,12 +24,72 @@ def handle_staleness(retry_pause=0.5):
     return staleness_decorator
 
 
+class WaitUntil(object):
+
+    @staticmethod
+    def exists(locator: Locator, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.visibility_of_element_located(locator),
+            f"Element with selector '{locator.selector}' does not exist"
+        )
+
+    @staticmethod
+    def not_exists(locator: Locator, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.invisibility_of_element_located(locator),
+            f"Element with selector '{locator.selector}' exists, but should not"
+        )
+
+    @staticmethod
+    def exists_any(locators, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            waitables.visibility_of_any_element_located(locators),
+            f"No element can be found to match any of the selectors '{locators}'"
+        )
+
+    @staticmethod
+    def not_exists_any(locators, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until_not(
+            waitables.visibility_of_any_element_located(locators),
+            f"At least one selector of '{locators}' exists, but should not"
+        )
+
+    @staticmethod
+    def exists_with_text(locator: Locator, text, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            waitables.element_to_be_present_with_text(locator, text),
+            f"Element with selector '{locator.selector}' and text of '{text}' does not exist"
+        )
+
+    @staticmethod
+    def not_exists_with_text(locator: Locator, text, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until_not(
+            waitables.element_to_be_present_with_text(locator, text),
+            f"Element with selector '{locator.selector}' and text of '{text}' exists, but should not"
+        )
+
+    @staticmethod
+    def exists_with_regex(locator: Locator, regex, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            waitables.element_to_be_present_with_regex(locator, regex),
+            f"Element with selector '{locator.selector}' and text matching regex '{regex}' does not exist exists"
+        )
+
+    @staticmethod
+    def not_exists_with_regex(locator: Locator, regex, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until_not(
+            waitables.element_to_be_present_with_regex(locator, regex),
+            f"Element with selector '{locator.selector}' and text matching regex '{regex}' exists, but should not"
+        )
+
+
 class Browser(object):
 
     def _get_driver(self):
         return CONTEXT.driver
 
     driver = property(_get_driver)
+    wait_until = WaitUntil()
 
     def exit_handler(self):
         self.driver.quit()
@@ -75,31 +135,6 @@ class Browser(object):
 
     def switch_to_default_content(self):
         self.driver.switch_to.default_content()
-
-    def wait_until_exists(self, locator: Locator, timeout=10):
-        WebDriverWait(self.driver, timeout).until(
-            expected_conditions.visibility_of_element_located(locator)
-        )
-
-    def wait_until_exists_any(self, locators, timeout=10):
-        WebDriverWait(self.driver, timeout).until(
-            waitables.visibility_of_any_element_located(locators)
-        )
-
-    def wait_until_exists_with_text(self, locator: Locator, text, timeout=10):
-        WebDriverWait(self.driver, timeout).until(
-            waitables.element_to_be_present_with_text(locator, text)
-        )
-
-    def wait_until_exists_with_regex(self, locator: Locator, regex, timeout=10):
-        WebDriverWait(self.driver, timeout).until(
-            waitables.element_to_be_present_with_regex(locator, regex)
-        )
-
-    def wait_until_not_exists(self, locator: Locator, timeout=10):
-        WebDriverWait(self.driver, timeout).until(
-            expected_conditions.invisibility_of_element_located(locator)
-        )
 
     def exists(self, locator: Locator):
         try:
@@ -161,3 +196,4 @@ class Browser(object):
         old_page = self.driver.find_element_by_tag_name('html')
         yield
         WebDriverWait(self.driver, timeout=timeout).until(expected_conditions.staleness_of(old_page))
+
