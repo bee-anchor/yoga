@@ -21,7 +21,7 @@ faf_nose_argparser.add_argument('-n', '--test-names', nargs='+', help='names of 
 faf_nose_argparser.add_argument('-a', '--attributes', nargs='+', help='filter which tests run using attributes')
 
 faf_pytest_argparser = argparse.ArgumentParser(description='Run tests using pytest', parents=[base_parser])
-faf_pytest_argparser.add_argument('--test-dir', help='directory containing tests to run')
+faf_pytest_argparser.add_argument('--test-dir', default="tests/", help="directory containing tests to run, default is 'tests'")
 faf_pytest_argparser.add_argument('-k', '--keyword-expression', help='only run tests which match the given substring expression (same as pytest -k)')
 faf_pytest_argparser.add_argument('-m', '--mark-expression', help='only run tests matching given mark expression')
 
@@ -58,10 +58,7 @@ def nose_args(args):
 def pytest_args(cmd_line_args):
     args = ['-s', '--tb=short']
     # add test directory location if specified, else the default location
-    if cmd_line_args.test_dir:
-        args.append(cmd_line_args.test_dir)
-    else:
-        args.append('tests/')
+    args.append(cmd_line_args.test_dir)
     if cmd_line_args.keyword_expression:
         args.extend(['-k', cmd_line_args.keyword_expression])
     if cmd_line_args.mark_expression:
