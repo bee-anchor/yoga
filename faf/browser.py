@@ -98,6 +98,11 @@ class Browser(object):
         self.driver.get(url)
 
     @handle_staleness()
+    def wait_for_and_click(self, locator: Locator):
+        self.wait_until.exists(locator)
+        self.driver.find_element(*locator).click()
+
+    @handle_staleness()
     def click(self, locator: Locator):
         self.driver.find_element(*locator).click()
 
@@ -173,18 +178,24 @@ class Browser(object):
         action_func()
         while time() < start_time + timeout:
             sleep(0.5)
-            if not predicate_func():
-                action_func()
-            else:
-                return
+            try:
+                if not predicate_func():
+                    action_func()
+                else:
+                    return
+            except:
+                continue
         raise TimeoutError("timeout waiting for predicate to become true")
 
     @staticmethod
     def wait_for(condition_function, timeout=10):
         start_time = time()
         while time() < start_time + timeout:
-            if condition_function():
-                return True
+            try:
+                if condition_function():
+                    return True
+            except:
+                continue
             else:
                 sleep(0.1)
         raise Exception(

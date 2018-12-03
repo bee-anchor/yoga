@@ -63,7 +63,7 @@ pytest
 You can write tests it whatever way you want, for the test runner you are using. Some libraries are installed as part of faf which you will find useful:
 * colorama - allows you to colour text on the console
 * assertpy - more powerful assertion library which will give you useful error messages when assertions fail
-* ipdb - a python debugger that uses IPython - better than the default one, has autocomplete!
+* pdbpp - a better python debugger that will automatically be used in place of pdb - it has autocomplete!
 
 ### After test actions
 

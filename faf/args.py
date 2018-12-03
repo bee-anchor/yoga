@@ -64,7 +64,7 @@ def pytest_args(cmd_line_args):
     if cmd_line_args.mark_expression:
         args.extend(['-m', cmd_line_args.mark_expression])
     if cmd_line_args.debug:
-        args.extend(['--pdb', '--pdbcls=IPython.terminal.debugger:Pdb'])
+        args.extend(['--pdb'])
     return args
 
 
