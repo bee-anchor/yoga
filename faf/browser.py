@@ -30,14 +30,14 @@ class WaitUntil(object):
     def exists(locator: Locator, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.visibility_of_element_located(locator),
-            f"Element with selector '{locator.selector}' does not exist"
+            f"Element with {locator.find_method} of '{locator.selector}' does not exist"
         )
 
     @staticmethod
     def not_exists(locator: Locator, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.invisibility_of_element_located(locator),
-            f"Element with selector '{locator.selector}' exists, but should not"
+            f"Element with {locator.find_method} of'{locator.selector}' exists, but should not"
         )
 
     @staticmethod
@@ -51,35 +51,35 @@ class WaitUntil(object):
     def not_exists_any(locators, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.visibility_of_any_element_located(locators),
-            f"At least one selector of '{locators}' exists, but should not"
+            f"At least one element with {locator.find_method} of '{locators}' exists, but should not"
         )
 
     @staticmethod
     def exists_with_text(locator: Locator, text, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.element_to_be_present_with_text(locator, text),
-            f"Element with selector '{locator.selector}' and text of '{text}' does not exist"
+            f"Element with {locator.find_method} of '{locator.selector}' and text of '{text}' does not exist"
         )
 
     @staticmethod
     def not_exists_with_text(locator: Locator, text, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.element_to_be_present_with_text(locator, text),
-            f"Element with selector '{locator.selector}' and text of '{text}' exists, but should not"
+            f"Element with {locator.find_method} of '{locator.selector}' and text of '{text}' exists, but should not"
         )
 
     @staticmethod
     def exists_with_regex(locator: Locator, regex, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.element_to_be_present_with_regex(locator, regex),
-            f"Element with selector '{locator.selector}' and text matching regex '{regex}' does not exist exists"
+            f"Element with {locator.find_method} of '{locator.selector}' and text matching regex '{regex}' does not exist"
         )
 
     @staticmethod
     def not_exists_with_regex(locator: Locator, regex, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.element_to_be_present_with_regex(locator, regex),
-            f"Element with selector '{locator.selector}' and text matching regex '{regex}' exists, but should not"
+            f"Element with {locator.find_method} of '{locator.selector}' and text matching regex '{regex}' exists, but should not"
         )
 
 
@@ -128,7 +128,7 @@ class Browser(object):
         for elem in elements:
             if elem.text == text:
                 return elem
-        raise NoSuchElementException(f'Unable to find element with selector of {locator.selector} and text of {text}')
+        raise NoSuchElementException(f'Unable to find element with {locator.find_method} of {locator.selector} and text of {text}')
 
     @handle_staleness()
     def fill_txtbox(self, locator: Locator, text):
