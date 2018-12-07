@@ -106,6 +106,10 @@ class Browser(object):
     def click(self, locator: Locator):
         self.driver.find_element(*locator).click()
 
+    @handle_staleness()
+    def click_element_with_text(self, locator: Locator, text):
+        self.get_element_with_text(locator, text).click()
+
     def click_random(self, locator: Locator):
         random.choice(self.driver.find_elements(*locator)).click()
 
@@ -147,6 +151,16 @@ class Browser(object):
             return True
         except NoSuchElementException:
             return False
+
+    def exists_with_text(self, locator: Locator, text):
+        try:
+            elements = self.driver.find_elements(*locator)
+            for elem in elements:
+                if elem.text == text:
+                    return True
+        except (NoSuchElementException, StaleElementReferenceException):
+            pass
+        return False
 
     def displayed(self, locator: Locator):
         try:
@@ -198,7 +212,7 @@ class Browser(object):
                 continue
             else:
                 sleep(0.1)
-        raise Exception(
+        raise TimeoutError(
             'Timeout waiting for {}'.format(condition_function.__name__)
         )
 
