@@ -50,6 +50,13 @@ class Config(object):
             for key in expected_keys:
                 if not self.config.has_option('remote_service', key):
                     raise KeyError(f'Missing config for execution type of selenium_remote/appium_remote: [remote_service] {key}')
+        elif self.args.execution == 'grid_remote':
+            if not self.config.has_section('remote_grid'):
+                raise KeyError(f"Missing 'remote_grid' section in the config")
+            expected_keys = ['remote_url', 'remote_screenshot_s3_bucket']
+            for key in expected_keys:
+                if not self.config.has_option('remote_grid', key):
+                    raise KeyError(f'Missing config for execution type of grid_remote: [remote_grid] {key}')
 
     def __set_env_config(self):
         if not self.config.has_section(f'environment.{self.args.environment}'):

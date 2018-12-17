@@ -7,7 +7,7 @@ base_parser.add_argument('-c', '--config', default='config.ini', help="config fi
 base_parser.add_argument('-o', '--override', nargs='+', help='config value override e.g. -o section.option=value section.option2=value2  (overrides after environment config modification, so to override env url would be environment.url=https://app.test)')
 base_parser.add_argument('-e', '--environment', required=True, choices=['local', 'test'], help='environment to run in')
 base_parser.add_argument('-x', '--execution', required=True,
-                         choices=['selenium_local', 'selenium_remote', 'appium_local', 'appium_remote', 'grid_local', 'non-ui'],
+                         choices=['selenium_local', 'selenium_remote', 'appium_local', 'appium_remote', 'grid_local', 'grid_remote', 'non-ui'],
                          help='execution type - type/location of driver')
 base_parser.add_argument('-b', '--browser', choices=['chrome', 'firefox', 'internet explorer', 'safari', 'edge'],
                          help='browser to use for a local selenium execution')

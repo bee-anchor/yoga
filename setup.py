@@ -14,7 +14,8 @@ setup(name='faf', version='0.1', description='flexible automation framework',
         'requests==2.19.1',
         'pytest==3.7.3',
         'assertpy==0.14',
-        'pdbpp==0.9.3'
+        'pdbpp==0.9.3',
+        'boto==2.49.0'
       ],
       setup_requires=["pytest-runner"],
       tests_require=["pytest"]

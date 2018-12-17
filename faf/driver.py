@@ -29,6 +29,9 @@ class Driver(object):
         elif self.args.execution == 'grid_local':
             driver = self.__grid_local_driver()
 
+        elif self.args.execution == 'grid_remote':
+            driver = self.__grid_remote_driver()
+
         elif self.args.execution == 'non-ui':
             # don't set up driver if running API etc tests
             return
@@ -85,6 +88,13 @@ class Driver(object):
 
     def __grid_local_driver(self):
         command_executor = "http://localhost:4444/wd/hub"
+        desired_capabilities = {
+            'browserName': self.args.browser
+        }
+        return webdriver.Remote(command_executor, desired_capabilities)
+
+    def __grid_remote_driver(self):
+        command_executor = CONTEXT.config['remote_grid']['remote_url']
         desired_capabilities = {
             'browserName': self.args.browser
         }

@@ -92,6 +92,23 @@ class TestDriver:
 
         self.mock_appium_webdriver.Remote.assert_called_with("http://test:test@appium.com", desired_capabilities)
 
+    @patch('faf.driver.CONTEXT')
+    def test_create_remote_hubdriver(self, mock_context):
+        test_config = configparser.ConfigParser()
+        test_config.add_section('remote_grid')
+        test_config.set('remote_grid', 'remote_url', 'http://hub.com:4444/wd/hub')
+        test_config.add_section('application')
+        test_config.set('application', 'name', 'test')
+        mock_context.config = test_config
+        args = Namespace(execution='grid_remote', browser='chrome')
+        desired_capabilities = {
+            'browserName': 'chrome'
+        }
+
+        faf.driver.Driver(args).get_driver()
+
+        self.mock_webdriver.Remote.assert_called_with("http://hub.com:4444/wd/hub", desired_capabilities)
+
     def test_raises_error_when_unrecognised_execution_argument(self):
         args = Namespace(execution='unknown')
 
