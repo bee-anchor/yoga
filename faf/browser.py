@@ -127,6 +127,10 @@ class Browser(object):
     def get_element_text(self, locator: Locator):
         return self.driver.find_element(*locator).text
 
+    @handle_staleness()
+    def get_element_value(self, locator: Locator):
+        return self.driver.find_element(*locator).get_attribute('value')
+
     def get_element_with_text(self, locator: Locator, text):
         elements = self.driver.find_elements(*locator)
         for elem in elements:
