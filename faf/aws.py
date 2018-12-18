@@ -13,4 +13,6 @@ def upload_screenshot_to_s3(filename, file):
     k = Key(bucket)
     k.key = filename
     k.set_contents_from_string(file)
-    print(k.generate_url(expires_in=0, query_auth=False))
+    url = k.generate_url(expires_in=0, query_auth=False)
+    print(url)
+    return url
