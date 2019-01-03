@@ -4,7 +4,7 @@ setup(name='faf', version='0.1', description='flexible automation framework',
       url='https://bitbucket.org/infinityworksconsulting/faf',
       author='Bianca Linscott',
       packages=['faf'],
-      package_data={'faf': ['resources/*', 'remote/*']},
+      package_data={'faf': ['resources/*', 'remote/*', 'data/*']},
       install_requires=[
         'Appium-Python-Client==0.28',
         'selenium==3.14.0',
@@ -15,7 +15,8 @@ setup(name='faf', version='0.1', description='flexible automation framework',
         'pytest==3.7.3',
         'assertpy==0.14',
         'pdbpp==0.9.3',
-        'boto==2.49.0'
+        'boto==2.49.0',
+        'PyMySQL==0.9.3'
       ],
       setup_requires=["pytest-runner"],
       tests_require=["pytest"]

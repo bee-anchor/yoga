@@ -94,8 +94,14 @@ class Browser(object):
     def exit_handler(self):
         self.driver.quit()
 
+    def refresh(self):
+        self.driver.refresh()
+
     def navigate_to(self, url):
         self.driver.get(url)
+
+    def page_title(self):
+        return self.driver.title
 
     @handle_staleness()
     def wait_for_and_click(self, locator: Locator):
@@ -142,6 +148,10 @@ class Browser(object):
             if elem.text == text:
                 return elem
         raise NoSuchElementException(f'Unable to find element with {locator.find_method} of {locator.selector} and text of {text}')
+
+    def get_element_location(self, locator: Locator):
+        elem = self.get_element(locator)
+        return elem.location
 
     @handle_staleness()
     def fill_txtbox(self, locator: Locator, text):

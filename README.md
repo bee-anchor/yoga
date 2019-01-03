@@ -14,10 +14,11 @@ Flexibility to choose your own test runner, to expand the library, write tests h
 #### Project structure:
 ```
 ~/project-automated-tests
+    /src
+        /pages
+            page.py
     /tests
         test.py
-    /pages
-        page.py
     local_capabilites.ini
     config.ini
     run.py
@@ -67,35 +68,52 @@ You can write tests it whatever way you want, for the test runner you are using.
 
 ### After test actions
 
-You will need to do some manual setup for you tests to support saucelabs test runs and slack reporting, in the form of actions that are taken at the end of the test run. This will depend on the test runner you use, and how it can support it.
+You will need to do some manual setup for you tests to support saucelabs test runs, screenshot uploading and slack reporting, in the form of actions that are taken at the end of the test run. This will depend on the test runner you use, and how it can support it.
 For pytest, you can use it's hooks and fixtures to do the actions. The example code you will need is:
 
 ```python
 results = []
+s3_screenshots = []
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     # hook to handle actions to take when test outcomes are available
-    # stores test outcomes in array
     outcome = yield
     rep = outcome.get_result()
 
+    if CONTEXT.args.execution == 'grid_remote':
+        if rep.outcome == 'failed':
+            # If something fails, take a screenshot and upload to s3
+            name = f"{rep.when}__{rep.location[-1]}_{int(time.time())}.png"
+            try:
+                s3_screenshots.append((upload_screenshot_to_s3(CONTEXT.config['application']['name'] + '/' + name,
+                                                               CONTEXT.driver.get_screenshot_as_png()),
+                                       rep.location[-1]))
+            except:
+                print('Failed to upload screenshot')
+
     if rep.when == "call":
+        # When a result is for a test (rather than swt up or tear down action) store the outcome for later
         results.append(rep.outcome)
 
 @pytest.fixture(scope="session", autouse=True)
 def end_of_test_actions():
-    # if the test is running in a remote mode and there is a failure, report job failed to saucelabs and slack
-    # if all tests passed, report job passed to saucelabs
-    # without this the job remains in an unknown state on saucelabs
     yield
     if CONTEXT.args.execution in {'selenium_remote', 'appium_remote'}:
         if 'failed' in results:
             SauceHelper().report_outcome(CONTEXT.driver.session_id, False)
-            if CONTEXT.args.slack_report:
-                SlackReporter(CONTEXT.config['slack']['webhook']).report_test_failure()
         else:
             SauceHelper().report_outcome(CONTEXT.driver.session_id, True)
+    if CONTEXT.args.slack_report and 'failed' in results:
+        if CONTEXT.args.execution in {'selenium_remote', 'appium_remote'}:
+            SlackReporter(CONTEXT.config['slack']['webhook']).report_test_failure(
+                Capabilities(CONTEXT.args).get_formatted_remote_capabilities(),
+                f"{CONTEXT.config['remote_service']['results_url']}/{CONTEXT.driver.session_id}")
+        elif CONTEXT.args.execution == 'grid_remote':
+            info = ""
+            for url, name in s3_screenshots:
+                info += f"<Screenshot for -  {url}|{name}>\n"
+            SlackReporter(CONTEXT.config['slack']['webhook']).report_test_failure(CONTEXT.args.browser, info)
 ```
 The critical part is that you report the job outcome to saucelabs and slack when it is appropriate
 
@@ -113,19 +131,19 @@ The critical part is that you report the job outcome to saucelabs and slack when
 |:----|:-------- |:-----------|
 | -c --config |no| path to the config file to use, defaults to `config.ini` |
 | -e --environment |yes| environment to run tests in, must have a section in the config.ini |
-| -x --execution |yes| execution type, one of selenium_local, selenium_remote, appium_local, appium_remote, grid_local, non-ui|
+| -x --execution |yes| execution type, one of selenium_local, selenium_remote, appium_local, appium_remote, grid_local, grid_remote, non-ui|
 | -b --browser |yes - with selenium_local execution type| browser to run tests on (if not using non-ui execution type) one of chrome, firefox, internet explorer, safari, edge|
 | -p --capabilities |yes - with appium or remote execution types|  which capabilities to use from relevant capabilities file (remote/local) when running using remote or any appium execution type|
-| -l --local_capabilities_file |no| path of local capabilities file, if overriding from the default of local_capabilities.ini |
+| -l --local_capabilities_file |no| path of local capabilities file, defaults to `local_capabilities.ini` |
 | -s --slack_report |no| turn on slack reporting of test outcomes|
-| -o --override |no| config value override e.g. -o section.option=value section.option2=value2. Overrides after environment config modifications, so to override env url would be e.g. local.url=https://app.test|
+| -o --override |no| config value override e.g. -o section.option=value section.option2=value2. Overrides after environment config modifications, so to override env url would be e.g. environment.url=https://app.test|
 | -d --debug |no| run in debug mode - will drop you into debugger on test failure. DO NOT USE ON CI! |
 
 #### Pytest specific arguments:
 
 | Arg |Required| Description|
 |:----|:-------|:----------|
-| --test-dir |no| path to tests, default is |
+| --test-dir |no| path to tests, default is `tests/`|
 | -k |no| keyword filter, to only run test containing this string in their name|
 | -m |no| mark filter, to only run tests that are marked as the pattern used dictates|
 
@@ -145,7 +163,7 @@ The critical part is that you report the job outcome to saucelabs and slack when
 
 # Adding to FAF
 
-As this is a library shared by multiple projects, any new code must be submitted via a PR!
+As this is a library shared by multiple projects, any new code must be added on a branch and submitted via a PR!
 Generally most code changes should need to happen in the browser.py file only.
 
 ## Adding more test runners
