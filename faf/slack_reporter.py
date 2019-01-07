@@ -3,8 +3,10 @@ from faf.context import CONTEXT
 
 class SlackReporter:
 
-    def __init__(self, webhook_url):
+    def __init__(self, webhook_url, app_name, env):
         self.url = webhook_url
+        self.app_name = app_name
+        self.env = env
 
     def report_test_failure(self, caps_or_browser, failure_info):
         payload = {
@@ -15,7 +17,7 @@ class SlackReporter:
                  "color": "#D00000",
                  "fields": [
                     {
-                       "title": f"APP: {CONTEXT.config['application']['name']}, ENV: {CONTEXT.args.environment}",
+                       "title": f"APP: {self.app_name}, ENV: {self.env}",
                        "value": f"DETAILS - {caps_or_browser}",
                        "short": False
                     },

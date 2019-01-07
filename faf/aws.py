@@ -3,10 +3,9 @@ from boto.s3.key import Key
 from faf.context import CONTEXT
 
 
-def upload_screenshot_to_s3(filename, file):
-    bucket_name = CONTEXT.config['remote_grid']['remote_screenshot_s3_bucket']
-    if CONTEXT.config.has_option('remote_grid', 's3_access_key') and CONTEXT.config.has_option('remote_grid', 's3_secret_access_key'):
-        conn = boto.connect_s3(CONTEXT.config['remote_grid']['s3_access_key'], CONTEXT.config['remote_grid']['s3_secret_access_key'])
+def upload_screenshot_to_s3(filename, file, bucket_name, s3_access_key=None, s3_secret_access_key=None):
+    if s3_access_key and s3_secret_access_key:
+        conn = boto.connect_s3(s3_access_key, s3_secret_access_key)
     else:
         conn = boto.connect_s3()
     bucket = conn.get_bucket(bucket_name)

@@ -83,18 +83,21 @@ def pytest_runtest_makereport(item, call):
 
     if CONTEXT.args.execution == 'grid_remote':
         if rep.outcome == 'failed':
-            # If something fails, take a screenshot and upload to s3
             name = f"{rep.when}__{rep.location[-1]}_{int(time.time())}.png"
             try:
-                s3_screenshots.append((upload_screenshot_to_s3(CONTEXT.config['application']['name'] + '/' + name,
-                                                               CONTEXT.driver.get_screenshot_as_png()),
-                                       rep.location[-1]))
+                s3_screenshots.append(
+                    (upload_screenshot_to_s3(CONTEXT.config['application']['name'] + '/' + name,
+                                             CONTEXT.driver.get_screenshot_as_png(),
+                                             CONTEXT.config['remote_grid']['remote_screenshot_s3_bucket'],
+                                             CONTEXT.config['remote_grid']['s3_access_key'],
+                                             CONTEXT.config['remote_grid']['s3_secret_access_key']),
+                     rep.location[-1]))
             except:
                 print('Failed to upload screenshot')
 
     if rep.when == "call":
-        # When a result is for a test (rather than swt up or tear down action) store the outcome for later
         results.append(rep.outcome)
+
 
 @pytest.fixture(scope="session", autouse=True)
 def end_of_test_actions():
@@ -105,15 +108,18 @@ def end_of_test_actions():
         else:
             SauceHelper().report_outcome(CONTEXT.driver.session_id, True)
     if CONTEXT.args.slack_report and 'failed' in results:
+        slack_reporter = SlackReporter(CONTEXT.config['slack']['webhook'],
+                                       CONTEXT.config['application']['name'],
+                                       CONTEXT.args.environment)
         if CONTEXT.args.execution in {'selenium_remote', 'appium_remote'}:
-            SlackReporter(CONTEXT.config['slack']['webhook']).report_test_failure(
-                Capabilities(CONTEXT.args).get_formatted_remote_capabilities(),
-                f"{CONTEXT.config['remote_service']['results_url']}/{CONTEXT.driver.session_id}")
+            results_url = f"{CONTEXT.config['remote_service']['results_url']}/{CONTEXT.driver.session_id}"
+            slack_reporter.report_test_failure(
+                Capabilities(CONTEXT.args).get_formatted_remote_capabilities(), results_url)
         elif CONTEXT.args.execution == 'grid_remote':
             info = ""
             for url, name in s3_screenshots:
                 info += f"<Screenshot for -  {url}|{name}>\n"
-            SlackReporter(CONTEXT.config['slack']['webhook']).report_test_failure(CONTEXT.args.browser, info)
+            slack_reporter.report_test_failure(CONTEXT.args.browser, info)
 ```
 The critical part is that you report the job outcome to saucelabs and slack when it is appropriate
 

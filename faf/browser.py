@@ -138,6 +138,10 @@ class Browser(object):
         return self.driver.find_element(*locator).get_attribute('value')
 
     @handle_staleness()
+    def get_element_inner_html(self, locator: Locator):
+        return self.driver.find_element(*locator).get_attribute('innerHTML')
+
+    @handle_staleness()
     def get_element_classes(self, locator: Locator):
         classes = self.driver.find_element(*locator).get_attribute('class')
         return classes.split()

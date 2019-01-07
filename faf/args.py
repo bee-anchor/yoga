@@ -26,7 +26,7 @@ faf_pytest_argparser.add_argument('-k', '--keyword-expression', help='only run t
 faf_pytest_argparser.add_argument('-m', '--mark-expression', help='only run tests matching given mark expression')
 
 faf_behave_argparser = argparse.ArgumentParser(description='Run tests using behave', parents=[base_parser])
-faf_behave_argparser.add_argument('--test_dir', required=True, help='directory containing behave tests and steps')
+faf_behave_argparser.add_argument('-f', '--features_dir', default="features/", required=True, help='path to the features directory, the directory containing behave tests and steps')
 faf_behave_argparser.add_argument('-t', '--tags', help='tags filter for running tests')
 
 
@@ -56,9 +56,7 @@ def nose_args(args):
 
 
 def pytest_args(cmd_line_args):
-    args = ['-s', '--tb=short']
-    # add test directory location if specified, else the default location
-    args.append(cmd_line_args.test_dir)
+    args = ['-s', '--tb=short', cmd_line_args.test_dir]
     if cmd_line_args.keyword_expression:
         args.extend(['-k', cmd_line_args.keyword_expression])
     if cmd_line_args.mark_expression:
@@ -66,5 +64,11 @@ def pytest_args(cmd_line_args):
     if cmd_line_args.debug:
         args.extend(['--pdb'])
     return args
+
+
+def behave_args(cmd_line_args):
+    args = [cmd_line_args.features_dir]
+    if cmd_line_args.tags:
+        args.extend(['-t', cmd_line_args.tags])
 
 
