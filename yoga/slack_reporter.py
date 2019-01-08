@@ -1,5 +1,4 @@
 import requests
-from faf.context import CONTEXT
 
 class SlackReporter:
 

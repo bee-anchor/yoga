@@ -1,5 +1,5 @@
 from sauceclient import SauceClient
-from faf.context import CONTEXT
+from yoga.context import CONTEXT
 
 
 class SauceHelper:

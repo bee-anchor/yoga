@@ -6,9 +6,9 @@ import random
 from functools import wraps
 from time import sleep, time
 
-from faf.context import CONTEXT
-from faf.helpers import Locator
-from faf import waitables
+from yoga.context import CONTEXT
+from yoga.helpers import Locator
+from yoga import waitables
 
 
 def handle_staleness(retry_pause=0.5):

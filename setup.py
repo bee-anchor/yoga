@@ -1,10 +1,10 @@
 from setuptools import setup
 
-setup(name='faf', version='0.1', description='flexible automation framework',
-      url='https://bitbucket.org/infinityworksconsulting/faf',
+setup(name='yoga', version='0.1', description='the flexible automation framework',
+      url='https://bitbucket.org/infinityworksconsulting/yoga',
       author='Bianca Linscott',
-      packages=['faf'],
-      package_data={'faf': ['resources/*', 'remote/*', 'data/*']},
+      packages=['yoga'],
+      package_data={'yoga': ['resources/*', 'remote/*', 'data/*']},
       install_requires=[
         'Appium-Python-Client==0.28',
         'selenium==3.14.0',

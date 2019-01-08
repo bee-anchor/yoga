@@ -1,6 +1,6 @@
 import pytest
 from argparse import Namespace
-from faf.args import pytest_args, arg_validation
+from yoga.args import pytest_args, arg_validation
 
 
 def test_arg_validation_fails_for_selenium_local_and_no_browser():
@@ -40,10 +40,10 @@ def test_arg_validation_fails_for_appium_remote_and_no_capabilities():
 def test_pytest_args_generates_maximum_possible_args():
     args = Namespace(test_dir='test/dir', keyword_expression='keyword', mark_expression='mark and mark1', debug=True)
     gen_args = pytest_args(args)
-    assert gen_args == ['-s', 'test/dir', '-k', 'keyword', '-m', 'mark and mark1', '--pdb']
+    assert gen_args == ['-s', '--tb=short', 'test/dir', '-k', 'keyword', '-m', 'mark and mark1', '--pdb']
 
 
 def test_pytest_args_generates_minimum_possible_args():
     args = Namespace(test_dir=None, keyword_expression=None, mark_expression=None, debug=False)
     gen_args = pytest_args(args)
-    assert gen_args == ['-s', 'tests/']
+    assert gen_args == ['-s', '--tb=short', None]

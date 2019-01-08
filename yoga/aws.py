@@ -1,6 +1,5 @@
 import boto
 from boto.s3.key import Key
-from faf.context import CONTEXT
 
 
 def upload_screenshot_to_s3(filename, file, bucket_name, s3_access_key=None, s3_secret_access_key=None):

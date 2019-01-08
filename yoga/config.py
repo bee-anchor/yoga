@@ -1,6 +1,6 @@
 import os
 import configparser
-from faf.context import CONTEXT
+from yoga.context import CONTEXT
 
 
 class Config(object):

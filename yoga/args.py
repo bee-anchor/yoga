@@ -15,19 +15,19 @@ base_parser.add_argument('-p', '--capability', help='which capability to use fro
 base_parser.add_argument('-l', '--local-capabilities-file', default="local_capabilities.ini", help='path of local capabilities file (default is local_capabilities.ini)')
 base_parser.add_argument('-s', '--slack_report', action='store_true', help='report test outcome to slack')
 
-faf_nose_argparser = argparse.ArgumentParser(description='Run tests using nose', parents=[base_parser])
-faf_nose_argparser.add_argument('--test-dir', help='directory containing tests to run')
-faf_nose_argparser.add_argument('-n', '--test-names', nargs='+', help='names of tests to run')
-faf_nose_argparser.add_argument('-a', '--attributes', nargs='+', help='filter which tests run using attributes')
+yoga_nose_argparser = argparse.ArgumentParser(description='Run tests using nose', parents=[base_parser])
+yoga_nose_argparser.add_argument('--test-dir', help='directory containing tests to run')
+yoga_nose_argparser.add_argument('-n', '--test-names', nargs='+', help='names of tests to run')
+yoga_nose_argparser.add_argument('-a', '--attributes', nargs='+', help='filter which tests run using attributes')
 
-faf_pytest_argparser = argparse.ArgumentParser(description='Run tests using pytest', parents=[base_parser])
-faf_pytest_argparser.add_argument('--test-dir', default="tests/", help="directory containing tests to run, default is 'tests'")
-faf_pytest_argparser.add_argument('-k', '--keyword-expression', help='only run tests which match the given substring expression (same as pytest -k)')
-faf_pytest_argparser.add_argument('-m', '--mark-expression', help='only run tests matching given mark expression')
+yoga_pytest_argparser = argparse.ArgumentParser(description='Run tests using pytest', parents=[base_parser])
+yoga_pytest_argparser.add_argument('--test-dir', default="tests/", help="directory containing tests to run, default is 'tests'")
+yoga_pytest_argparser.add_argument('-k', '--keyword-expression', help='only run tests which match the given substring expression (same as pytest -k)')
+yoga_pytest_argparser.add_argument('-m', '--mark-expression', help='only run tests matching given mark expression')
 
-faf_behave_argparser = argparse.ArgumentParser(description='Run tests using behave', parents=[base_parser])
-faf_behave_argparser.add_argument('-f', '--features_dir', default="features/", required=True, help='path to the features directory, the directory containing behave tests and steps')
-faf_behave_argparser.add_argument('-t', '--tags', help='tags filter for running tests')
+yoga_behave_argparser = argparse.ArgumentParser(description='Run tests using behave', parents=[base_parser])
+yoga_behave_argparser.add_argument('-f', '--features_dir', default="features/", required=True, help='path to the features directory, the directory containing behave tests and steps')
+yoga_behave_argparser.add_argument('-t', '--tags', help='tags filter for running tests')
 
 
 def arg_validation(args):

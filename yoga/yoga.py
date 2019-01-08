@@ -1,7 +1,7 @@
-from faf.context import CONTEXT
-from faf.config import Config
-from faf.driver import Driver
-from faf.args import arg_validation
+from yoga.context import CONTEXT
+from yoga.config import Config
+from yoga.driver import Driver
+from yoga.args import arg_validation
 
 
 def test_env_setup(arg_parser):

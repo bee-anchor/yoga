@@ -1,5 +1,5 @@
 import pytest
-from faf.context import CONTEXT
+from yoga.context import CONTEXT
 
 
 @pytest.fixture(autouse=True)

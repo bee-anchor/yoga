@@ -1,5 +1,5 @@
-# FAF - Flexible Automation Framework
-An automation library that will do a lot of the heavy lifting for you around test configuration and UI test driver setup, but leave flexibility!
+# YOGA - The Flexible Automation Framework
+An automation library that will do a lot of the heavy lifting for you around test configuration and UI test driver setup, but leaves flexibility!
 Flexibility to choose your own test runner, to expand the library, write tests how *you* want and more!
 
 # Getting started
@@ -24,16 +24,16 @@ Flexibility to choose your own test runner, to expand the library, write tests h
     run.py
 ```
 
-1. Clone faf
+1. Clone yoga
 ```
-git clone git@bitbucket.org:infinityworksconsulting/faf.git
+git clone git@bitbucket.org:infinityworksconsulting/yoga.git
 ```
-1. Install faf as a dependency for your project using pip (highly recommend you use a virtual env!)
+1. Install yoga as a dependency for your project using pip (highly recommend you use a virtual env!)
 ```
-pip install /path/to/faf/setup.py
+pip install /path/to/yoga/setup.py
 ```
-1. Copy the config from `faf/resources/example_config.ini` to your `config.ini` in your project, and change the values to those for your project.
-1. Copy one of the example runners from `faf/resources` to your `run.py` file (the pytest one is currently best supported and tested)
+1. Copy the config from `yoga/resources/example_config.ini` to your `config.ini` in your project, and change the values to those for your project.
+1. Copy one of the example runners from `yoga/resources` to your `run.py` file (the pytest one is currently best supported and tested)
 1. Start writing tests
 1. Run your tests! e.g. locally with
 ```
@@ -53,15 +53,15 @@ python3 run.py -e test -x selenium_local -b chrome
 * Stores capabilities for running appium tests locally, add these as required. There is an example one in `resources`
 
 ## Run framework tests
-These are pytest tests, run the pytest command in the faf root directory:
+These are pytest tests, run the pytest command in the yoga root directory:
 ```
-cd /faf
+cd /yoga
 pytest
 ```
 
 # Writing tests
 
-You can write tests it whatever way you want, for the test runner you are using. Some libraries are installed as part of faf which you will find useful:
+You can write tests it whatever way you want, for the test runner you are using. Some libraries are installed as part of yoga which you will find useful:
 * colorama - allows you to colour text on the console
 * assertpy - more powerful assertion library which will give you useful error messages when assertions fail
 * pdbpp - a better python debugger that will automatically be used in place of pdb - it has autocomplete!
@@ -167,7 +167,7 @@ The critical part is that you report the job outcome to saucelabs and slack when
 |`python3 run.py -e test -x selenium_remote -p windows10chrome -s`|run test remotely on saucelabs using the remote capabilities specified by the windows10chrome section, and report a test failure to slack|
 |`python3 run.py -e test -x appium_remote -p android6`|run test remotely on saucelabs using the remote capabilities specified by the android6 section|
 
-# Adding to FAF
+# Adding to YOGA
 
 As this is a library shared by multiple projects, any new code must be added on a branch and submitted via a PR!
 Generally most code changes should need to happen in the browser.py file only.

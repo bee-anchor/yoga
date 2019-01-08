@@ -1,9 +1,9 @@
 from selenium import webdriver
 from appium import webdriver as appium_webdriver
 import atexit
-from faf.context import CONTEXT
-from faf.remote.sauce_helper import SauceHelper
-from faf.capabilities import Capabilities
+from yoga.context import CONTEXT
+from yoga.remote.sauce_helper import SauceHelper
+from yoga.capabilities import Capabilities
 
 
 class Driver(object):

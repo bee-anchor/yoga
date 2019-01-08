@@ -1,7 +1,8 @@
 import pytest
+import os
 from argparse import Namespace
-from faf.config import Config
-from faf.context import CONTEXT
+from yoga.config import Config
+from yoga.context import CONTEXT
 import tempfile
 
 
@@ -38,7 +39,7 @@ class TestConfig():
             assert 'environment' in CONTEXT.config.sections()
 
     def test_config_setup_raises_exception_on_invalid_config_file(self):
-        path = 'not/exists/path'
+        path = os.path.join(os.path.abspath(os.curdir), 'not/exists/path')
         args = Namespace(config=path)
 
         with pytest.raises(FileNotFoundError,
