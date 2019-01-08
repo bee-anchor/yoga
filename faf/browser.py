@@ -225,6 +225,19 @@ class Browser(object):
         raise TimeoutError("timeout waiting for predicate to become true")
 
     @staticmethod
+    def retry_until_no_exceptions(action_func, failure_action_func, catch_exceptions, timeout=10):
+        start_time = time()
+        while time() < start_time + timeout:
+            try:
+                action_func()
+                return
+            except catch_exceptions:
+                sleep(0.5)
+                failure_action_func()
+                continue
+        action_func()
+
+    @staticmethod
     def wait_for(condition_function, timeout=10):
         start_time = time()
         while time() < start_time + timeout:
