@@ -121,8 +121,21 @@ def end_of_test_actions():
                 info += f"<Screenshot for -  {url}|{name}>\n"
             slack_reporter.report_test_failure(CONTEXT.args.browser, info)
 ```
-The critical part is that you report the job outcome to saucelabs and slack when it is appropriate
+The critical part is that you report the job outcome to saucelabs and slack when it is appropriate, and take and save screenshots when appropriate
 
+## Types of tests supported
+
+Because yoga is more of a library of core useful features and setup, and a wrapper around a normal test runner library, you can write any kind of test with it you like, e.g.:
+* UI tests
+* API tests
+* Integration tests
+* etc...
+* even unit tests if you so desired
+
+All that may be needed is finding a python library to support you in this endeavour.
+Yoga includes some very useful dependencies for such test types, including:
+* requests - for API tests
+* PyMySQL - for tests against MySQL databases
 
 # Running Automation Tests
 
@@ -163,9 +176,12 @@ The critical part is that you report the job outcome to saucelabs and slack when
 |`python3 run.py -e test -x selenium_local -b chrome -d -k login_logout`| run locally on chrome in debug mode where tests contain 'login_logout' in their name|
 |`python3 run.py -e test -x selenium_local -b chrome -d -m desktop`| run locally on chrome where tests are marked with 'desktop'|
 |`python3 run.py -e test -x appium_local -p iphone7`|run tests locally using appium, on the device specified in the local_capabilities.ini file as 'iphone7' (appium and the correct simulator need to be running first)|
-|`python3 run.py -e test -x grid_local -b "internet explorer"`|run test on an internet explorer browser connected to a locally running selenium grid (can use this to run tests on virtual machines)|
-|`python3 run.py -e test -x selenium_remote -p windows10chrome -s`|run test remotely on saucelabs using the remote capabilities specified by the windows10chrome section, and report a test failure to slack|
-|`python3 run.py -e test -x appium_remote -p android6`|run test remotely on saucelabs using the remote capabilities specified by the android6 section|
+|`python3 run.py -e test -x grid_local -b "internet explorer"`|run tests on an internet explorer browser connected to a locally running selenium grid (can use this to run tests on virtual machines)|
+|`python3 run.py -e test -x selenium_remote -p windows10chrome -s`|run tests remotely on saucelabs using the remote capabilities specified by the windows10chrome section, and report a test failure to slack|
+|`python3 run.py -e test -x appium_remote -p android6`|run tests remotely on saucelabs using the remote capabilities specified by the android6 section|
+|`python3 run.py -e test -x grid_remote -b chrome`|run tests on a remote selenium grid, on an attached chrome browser node |
+|`python3 run.py -e test -x non-ui`|for running non-ui tests e.g. API tests, Integration tests. Will not set up anything selenium related such as webdriver and browsers.|
+
 
 # Adding to YOGA
 
