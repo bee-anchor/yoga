@@ -27,9 +27,44 @@ def handle_staleness(retry_pause=0.5):
 class WaitUntil(object):
 
     @staticmethod
-    def exists(locator: Locator, timeout=10):
+    def title_is(title, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.title_is(title),
+            f"Page title was not '{title}' as expected"
+        )
+
+    @staticmethod
+    def title_contains(title, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.title_is(title),
+            f"Page title did not contain '{title}' as expected"
+        )
+
+    @staticmethod
+    def url_is(url, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.url_to_be(url),
+            f"Current url was not '{url}' as expected"
+        )
+
+    @staticmethod
+    def url_contains(url, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.title_is(url),
+            f"Current url did not contain '{url}' as expected"
+        )
+
+    @staticmethod
+    def visible(locator: Locator, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.visibility_of_element_located(locator),
+            f"Element with {locator.find_method} of '{locator.selector}' is not visible"
+        )
+
+    @staticmethod
+    def exists(locator: Locator, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.presence_of_element_located(locator),
             f"Element with {locator.find_method} of '{locator.selector}' does not exist"
         )
 
@@ -41,17 +76,38 @@ class WaitUntil(object):
         )
 
     @staticmethod
+    def clickable(locator: Locator, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
+            expected_conditions.element_to_be_clickable(locator),
+            f"Element with {locator.find_method} of'{locator.selector}' is not clickable"
+        )
+
+    @staticmethod
     def exists_any(locators, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
-            waitables.visibility_of_any_element_located(locators),
+            waitables.presence_of_any_element_located(locators),
             f"No element can be found to match any of the selectors '{locators}'"
         )
 
     @staticmethod
     def not_exists_any(locators, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
+            waitables.presence_of_any_element_located(locators),
+            f"At least one element matching the locators is present'{locators}'"
+        )
+
+    @staticmethod
+    def visible_any(locators, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.visibility_of_any_element_located(locators),
-            f"At least one element with {locator.find_method} of '{locators}' exists, but should not"
+            f"No element can be found to match any of the selectors '{locators}'"
+        )
+
+    @staticmethod
+    def not_visible_any(locators, timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until_not(
+            waitables.visibility_of_any_element_located(locators),
+            f"At least one element matching the locators is present'{locators}'"
         )
 
     @staticmethod
@@ -80,6 +136,13 @@ class WaitUntil(object):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.element_to_be_present_with_regex(locator, regex),
             f"Element with {locator.find_method} of '{locator.selector}' and text matching regex '{regex}' exists, but should not"
+        )
+
+    @staticmethod
+    def alert_is_present(timeout=10):
+        WebDriverWait(CONTEXT.driver, timeout).until_not(
+            expected_conditions.alert_is_present(),
+            f"No alert is present"
         )
 
 

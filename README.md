@@ -190,7 +190,7 @@ Generally most code changes should need to happen in the browser.py file only.
 
 ## Adding more test runners
 
-Currently the pytest runner is the only one is use in any projects, the nose runner has been used in the past, but the behave runner is not yet in a working state.
+Currently the pytest runner is the only one is use in any projects, the nose runner has been used in the past and the behave runner is working but not yet used anywhere.
 
 Add the commandline arguments required, pass these through to the main method of the runner.
 

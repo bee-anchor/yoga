@@ -68,7 +68,7 @@ class element_to_be_present_with_regex(object):
 
 
 class visibility_of_any_element_located(object):
-    """ An expectation for checking if any given element exists on the page
+    """ An expectation for checking if any given element is visible on the page
 
     """
     def __init__(self, locators):
@@ -80,6 +80,23 @@ class visibility_of_any_element_located(object):
                 elem = driver.find_element(*locator)
                 if elem.is_displayed():
                     return True
+            except (NoSuchElementException, StaleElementReferenceException):
+                continue
+        return False
+
+
+class presence_of_any_element_located(object):
+    """ An expectation for checking if any given element exists on the page
+
+    """
+    def __init__(self, locators):
+        self.locators = locators
+
+    def __call__(self, driver):
+        for locator in self.locators:
+            try:
+                driver.find_element(*locator)
+                return True
             except (NoSuchElementException, StaleElementReferenceException):
                 continue
         return False
