@@ -15,7 +15,7 @@ setup(name='yoga', version='0.1', description='the flexible automation framework
         'pytest==3.7.3',
         'assertpy==0.14',
         'pdbpp==0.9.3',
-        'boto==2.49.0',
+        'boto3==1.9.86',
         'PyMySQL==0.9.3',
         'pystunnel==1.0a1'
       ],
