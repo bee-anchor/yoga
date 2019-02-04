@@ -28,6 +28,8 @@ class MySQLConnector:
                 cursor.execute(sql, args)
 
             connection.commit()
+        except Exception as e:
+            print(e)
 
         finally:
             connection.close()
@@ -40,6 +42,8 @@ class MySQLConnector:
             with connection.cursor() as cursor:
                 cursor.execute(sql, args)
                 return cursor.fetchall()
+        except Exception as e:
+            print(e)
 
         finally:
             connection.close()
@@ -52,6 +56,8 @@ class MySQLConnector:
             with connection.cursor() as cursor:
                 cursor.execute(sql, args)
                 return cursor.fetchone()
+        except Exception as e:
+            print(e)
 
         finally:
             connection.close()
