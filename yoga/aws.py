@@ -8,7 +8,7 @@ def upload_screenshot_to_s3(filename, file, bucket_name, aws_access_key=None,
                             aws_session_token=aws_session_token, region_name=region_name)
 
     s3.Bucket(bucket_name).put_object(Key=filename, Body=file, ContentType='image/png', ACL='private')
-    url = f'{s3.meta.client.meta.endpoint_url}/{bucket_name}/{filename}'
+    url = f'https://s3.{s3.meta.client.meta.region_name}.amazonaws.com/{bucket_name}/{filename}'
     print(url)
     return url
 
