@@ -8,7 +8,6 @@ from time import sleep, time
 
 from yoga.context import CONTEXT
 from yoga.helpers import Locator
-from yoga.helpers import Locator
 from yoga import waitables
 
 
