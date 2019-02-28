@@ -49,7 +49,7 @@ class WaitUntil(object):
 
     @staticmethod
     def url_contains(url, timeout=10):
-        WebDriverWait(CONTEXT.driver, timeout).until(
+        return WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.url_contains(url),
             f"Current url did not contain '{url}' as expected"
         )
