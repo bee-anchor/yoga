@@ -8,6 +8,7 @@ from time import sleep, time
 
 from yoga.context import CONTEXT
 from yoga.helpers import Locator
+from yoga.helpers import Locator
 from yoga import waitables
 
 
@@ -50,7 +51,7 @@ class WaitUntil(object):
     @staticmethod
     def url_contains(url, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
-            expected_conditions.title_is(url),
+            expected_conditions.url_contains(url),
             f"Current url did not contain '{url}' as expected"
         )
 
