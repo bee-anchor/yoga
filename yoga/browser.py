@@ -272,6 +272,9 @@ class Browser(object):
     def is_safari(self):
         return 'browserName' in self.driver.capabilities and self.driver.capabilities['browserName'] in ['Safari', 'safari']
 
+    def delete_cookie(self, cookie_name):
+        self.driver.delete_cookie(cookie_name)
+
     @staticmethod
     def retry_until_true(action_func, predicate_func, timeout=10):
         start_time = time()
