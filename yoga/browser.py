@@ -275,6 +275,10 @@ class Browser(object):
     def delete_cookie(self, cookie_name):
         self.driver.delete_cookie(cookie_name)
 
+    def delete_all_cookies(self):
+        self.driver.delete_all_cookies()
+
+
     @staticmethod
     def retry_until_true(action_func, predicate_func, timeout=10):
         start_time = time()
