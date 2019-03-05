@@ -49,7 +49,7 @@ class WaitUntil(object):
 
     @staticmethod
     def url_contains(url, timeout=10):
-        WebDriverWait(CONTEXT.driver, timeout).until(
+        return WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.url_contains(url),
             f"Current url did not contain '{url}' as expected"
         )
@@ -271,6 +271,13 @@ class Browser(object):
 
     def is_safari(self):
         return 'browserName' in self.driver.capabilities and self.driver.capabilities['browserName'] in ['Safari', 'safari']
+
+    def delete_cookie(self, cookie_name):
+        self.driver.delete_cookie(cookie_name)
+
+    def delete_all_cookies(self):
+        self.driver.delete_all_cookies()
+
 
     @staticmethod
     def retry_until_true(action_func, predicate_func, timeout=10):
