@@ -160,6 +160,9 @@ class Browser(object):
     def refresh(self):
         self.driver.refresh()
 
+    def execute_script(self, script):
+        return self.driver.execute_script(script)
+
     def navigate_to(self, url):
         self.driver.get(url)
 
