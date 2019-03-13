@@ -56,7 +56,7 @@ class TestDriver:
         desired_capabilities = {
             'browserName': 'chrome',
             'platform': 'Windows 10',
-            'version': '68.0',
+            'version': '72.0',
             'idleTimeout': '100'
         }
 
