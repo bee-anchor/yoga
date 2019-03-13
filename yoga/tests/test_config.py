@@ -118,6 +118,23 @@ class TestConfig():
                                match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\] remote_url'):
                 Config(args).setup()
 
+    def test_config_setup_raises_exception_for_missing_appium_remote_real_config_option(self):
+        with tempfile.NamedTemporaryFile() as config:
+            config.write(
+                b'''[remote_service]
+                remote_url = eu1.appium.testobject.com/wd/hub
+                results_url = https://app.eu-central-1.saucelabs.com/tests
+                job_timeout = 300
+                
+                [application]
+                name = test
+                ''')
+            config.flush()
+            args = Namespace(config=config.name, execution='appium_remote_real')
+
+            with pytest.raises(KeyError,
+                               match='Missing config for execution type of appium_remote_real: \[remote_service\] api_url'):
+                Config(args).setup()
 
     def test_config_setup_raises_exception_for_missing_env_config_section(self):
         with tempfile.NamedTemporaryFile() as config:
