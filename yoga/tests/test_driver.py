@@ -97,6 +97,39 @@ class TestDriver:
         self.mock_appium_webdriver.Remote.assert_called_with("http://test:test@appium.com", desired_capabilities)
 
     @patch('yoga.driver.CONTEXT')
+    def test_create_remote_appium_real_driver(self, mock_context):
+        test_config = configparser.ConfigParser()
+        test_config.add_section('remote_service')
+        test_config.set('remote_service', 'remote_url', 'eu1.appium.testobject.com/wd/hub')
+        test_config.set('remote_service', 'api_url', 'test')
+        test_config.set('remote_service', 'results_url', 'test')
+        test_config.set('remote_service', 'job_timeout', '100')
+        test_config.add_section('application')
+        test_config.set('application', 'name', 'test')
+        mock_context.config = test_config
+        args = Namespace(execution='appium_remote_real', capability='iphone8real')
+        desired_capabilities = {
+            'browserName' : 'Safari',
+            'appiumVersion' : '1.9.1',
+            'deviceName' : 'iPhone 8',
+            'deviceOrientation' : 'portrait',
+            'platformVersion' : '12.1.4',
+            'platformName' : 'iOS',
+            'safariAllowPopups' : 'true',
+            'nativeWebTap' : 'true',
+            'autoDismissAlerts' : 'true',
+            'testobject_api_key' : '${SAUCELABS.API_KEY}',
+            'idleTimeout': '100'
+        }
+
+        self.mock_appium_webdriver.Remote.return_value.session_id = '1234'
+        with patch.object(yoga.driver.Driver, '_Driver__name_saucelabs_job') as patched_set_saucelabs_name:
+            yoga.driver.Driver(args).get_driver()
+            patched_set_saucelabs_name.assert_called_with('1234')
+
+        self.mock_appium_webdriver.Remote.assert_called_with("http://eu1.appium.testobject.com/wd/hub", desired_capabilities)
+
+    @patch('yoga.driver.CONTEXT')
     def test_create_remote_hubdriver(self, mock_context):
         test_config = configparser.ConfigParser()
         test_config.add_section('remote_grid')
