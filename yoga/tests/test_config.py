@@ -125,7 +125,7 @@ class TestConfig():
                 remote_url = eu1.appium.testobject.com/wd/hub
                 results_url = https://app.eu-central-1.saucelabs.com/tests
                 job_timeout = 300
-                
+                testobject_api_key = 1234
                 [application]
                 name = test
                 ''')
