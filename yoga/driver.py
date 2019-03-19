@@ -81,6 +81,10 @@ class Driver(object):
 
         desired_capabilities = Capabilities(self.args).get_remote_capabilities()
         desired_capabilities['idleTimeout'] = CONTEXT.config['remote_service']['job_timeout']
+
+        if driver_type == 'appium_real':
+            desired_capabilities['testobject_api_key'] = CONTEXT.config['remote_service']['testobject_api_key']
+
         self.capabilities = desired_capabilities
 
         if driver_type == 'selenium':

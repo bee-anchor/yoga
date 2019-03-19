@@ -104,6 +104,7 @@ class TestDriver:
         test_config.set('remote_service', 'api_url', 'test')
         test_config.set('remote_service', 'results_url', 'test')
         test_config.set('remote_service', 'job_timeout', '100')
+        test_config.set('remote_service', 'testobject_api_key', '12345')
         test_config.add_section('application')
         test_config.set('application', 'name', 'test')
         mock_context.config = test_config
@@ -118,7 +119,7 @@ class TestDriver:
             'safariAllowPopups' : 'true',
             'nativeWebTap' : 'true',
             'autoDismissAlerts' : 'true',
-            'testobject_api_key' : '${SAUCELABS.API_KEY}',
+            'testobject_api_key' : '12345',
             'idleTimeout': '100'
         }
 
