@@ -7,7 +7,7 @@ base_parser.add_argument('-c', '--config', default='config.ini', help="config fi
 base_parser.add_argument('-o', '--override', nargs='+', help='config value override e.g. -o section.option=value section.option2=value2  (overrides after environment config modification, so to override env url would be environment.url=https://app.test)')
 base_parser.add_argument('-e', '--environment', required=True, help='environment to run in')
 base_parser.add_argument('-x', '--execution', required=True,
-                         choices=['selenium_local', 'selenium_remote', 'appium_local', 'appium_remote', 'grid_local', 'grid_remote', 'non-ui'],
+                         choices=['selenium_local', 'selenium_remote', 'appium_local', 'appium_remote', 'appium_remote_real', 'grid_local', 'grid_remote', 'non-ui'],
                          help='execution type - type/location of driver')
 base_parser.add_argument('-b', '--browser', choices=['chrome', 'firefox', 'internet explorer', 'safari', 'edge'],
                          help='browser to use for a local selenium execution')
@@ -34,8 +34,8 @@ def arg_validation(args):
     if args.execution != 'non-ui':
         if args.execution in {'selenium_local', 'grid_local'} and args.browser is None:
             raise RuntimeError('When using an execution type of selenium_local or grid_local, a browser must be specified (-b)')
-        elif args.execution in {'selenium_remote', 'appium_local', 'appium_remote'} and args.capability is None:
-            raise RuntimeError('When using an execution type of selenium_remote, appium_local or appium_remote, capability must be specified (-p)')
+        elif args.execution in {'selenium_remote', 'appium_local', 'appium_remote', 'appium_remote_real'} and args.capability is None:
+            raise RuntimeError('When using an execution type of selenium_remote, appium_local, appium_remote or appium_remote_real, capability must be specified (-p)')
 
 
 def nose_args(args):

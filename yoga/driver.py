@@ -26,6 +26,10 @@ class Driver(object):
             driver = self.__appium_remote_driver()
             self.__name_saucelabs_job(driver.session_id)
 
+        elif self.args.execution == 'appium_remote_real':
+            driver = self.__appium_remote_real_driver()
+            self.__name_saucelabs_job(driver.session_id)
+
         elif self.args.execution == 'grid_local':
             driver = self.__grid_local_driver()
 
@@ -69,15 +73,26 @@ class Driver(object):
 
     def __remote_driver(self, driver_type):
         url = CONTEXT.config['remote_service']['remote_url']
-        username = CONTEXT.config['remote_service']['username']
-        access_key = CONTEXT.config['remote_service']['access_key']
-        command_executor = f"http://{username}:{access_key}@{url}"
+
+        if driver_type == 'selenium' or driver_type == 'appium':
+            username = CONTEXT.config['remote_service']['username']
+            access_key = CONTEXT.config['remote_service']['access_key']
+            command_executor = f"http://{username}:{access_key}@{url}" 
+
         desired_capabilities = Capabilities(self.args).get_remote_capabilities()
         desired_capabilities['idleTimeout'] = CONTEXT.config['remote_service']['job_timeout']
+
+        if driver_type == 'appium_real':
+            desired_capabilities['testobject_api_key'] = CONTEXT.config['remote_service']['testobject_api_key']
+
         self.capabilities = desired_capabilities
+
         if driver_type == 'selenium':
             return webdriver.Remote(command_executor, desired_capabilities)
         elif driver_type == 'appium':
+            return appium_webdriver.Remote(command_executor, desired_capabilities)
+        elif driver_type == 'appium_real':
+            command_executor = f"http://{url}"
             return appium_webdriver.Remote(command_executor, desired_capabilities)
 
     def __selenium_remote_driver(self):
@@ -85,6 +100,9 @@ class Driver(object):
 
     def __appium_remote_driver(self):
         return self.__remote_driver('appium')
+
+    def __appium_remote_real_driver(self):
+        return self.__remote_driver('appium_real')
 
     def __grid_local_driver(self):
         command_executor = "http://localhost:4444/wd/hub"
@@ -105,7 +123,3 @@ class Driver(object):
         caps = Capabilities(self.args).get_formatted_remote_capabilities()
         name = f"{CONTEXT.config['application']['name']} - {caps}"
         SauceHelper().update_job_name(session_id, name)
-
-
-
-
