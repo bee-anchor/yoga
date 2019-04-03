@@ -85,6 +85,9 @@ class Driver(object):
         if driver_type == 'appium_real':
             desired_capabilities['testobject_api_key'] = CONTEXT.config['remote_service']['testobject_api_key']
 
+        if self.args.tunnel:
+            desired_capabilities['tunnelIdentifier'] = self.args.tunnel
+            
         self.capabilities = desired_capabilities
 
         if driver_type == 'selenium':
