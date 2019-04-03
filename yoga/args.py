@@ -14,6 +14,8 @@ base_parser.add_argument('-b', '--browser', choices=['chrome', 'firefox', 'inter
 base_parser.add_argument('-p', '--capability', help='which capability to use from relevant capabilities file (remote|local)')
 base_parser.add_argument('-l', '--local-capabilities-file', default="local_capabilities.ini", help='path of local capabilities file (default is local_capabilities.ini)')
 base_parser.add_argument('-s', '--slack_report', action='store_true', help='report test outcome to slack')
+base_parser.add_argument('-u', '--tunnel', help='the name of the sauce lab tunnel')
+
 
 yoga_nose_argparser = argparse.ArgumentParser(description='Run tests using nose', parents=[base_parser])
 yoga_nose_argparser.add_argument('--test-dir', help='directory containing tests to run')
