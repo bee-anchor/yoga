@@ -6,7 +6,7 @@ setup(name='yoga', version='0.1', description='the flexible automation framework
       packages=['yoga'],
       package_data={'yoga': ['resources/*', 'remote/*', 'data/*']},
       install_requires=[
-        'Appium-Python-Client==0.36',
+        'Appium-Python-Client==0.39',
         'selenium==3.141.0',
         'urllib3==1.24.1',
         'colorama==0.3.9',
