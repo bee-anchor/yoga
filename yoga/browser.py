@@ -1,4 +1,7 @@
 from contextlib import contextmanager
+from typing import Union
+from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
@@ -148,7 +151,7 @@ class WaitUntil(object):
 
 class Browser(object):
 
-    def _get_driver(self):
+    def _get_driver(self) -> Union[WebDriver, AppiumWebDriver]:
         return CONTEXT.driver
 
     driver = property(_get_driver)
