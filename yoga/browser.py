@@ -160,11 +160,14 @@ class Browser(object):
     def exit_handler(self):
         self.driver.quit()
 
+    def current_url(self):
+        return self.driver.current_url
+
     def refresh(self):
         self.driver.refresh()
 
-    def execute_script(self, script):
-        return self.driver.execute_script(script)
+    def execute_script(self, script, *args):
+        return self.driver.execute_script(script, *args)
 
     def navigate_to(self, url):
         self.driver.get(url)
@@ -174,8 +177,16 @@ class Browser(object):
 
     @handle_staleness()
     def wait_for_and_click(self, locator: Locator):
-        self.wait_until.exists(locator)
+        self.wait_until.visible(locator)
         self.driver.find_element(*locator).click()
+
+    # some button clicks don't work properly in iOS (very very slow, or not at all), use this instead :)
+    def js_click_elem(self, element):
+        self.driver.execute_script('return arguments[0].click()', element)
+
+    def js_click(self, locator):
+        element = self.get_element(locator)
+        self.js_click_elem(element)
 
     @handle_staleness()
     def click(self, locator: Locator):
@@ -274,6 +285,12 @@ class Browser(object):
 
     def is_mobile_device(self):
         return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] in ['Android', 'iOS']
+
+    def is_ios_device(self):
+        return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] == 'iOS'
+
+    def is_android_device(self):
+        return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] == 'Android'
 
     def is_safari(self):
         return 'browserName' in self.driver.capabilities and self.driver.capabilities['browserName'] in ['Safari', 'safari']
