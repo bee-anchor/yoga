@@ -14,7 +14,8 @@ base_parser.add_argument('-b', '--browser', choices=['chrome', 'firefox', 'inter
 base_parser.add_argument('-p', '--capability', help='which capability to use from relevant capabilities file (remote|local)')
 base_parser.add_argument('-l', '--local-capabilities-file', default="local_capabilities.ini", help='path of local capabilities file (default is local_capabilities.ini)')
 base_parser.add_argument('-s', '--slack_report', action='store_true', help='report test outcome to slack')
-base_parser.add_argument('-u', '--tunnel', help='the name of the sauce lab tunnel')
+base_parser.add_argument('-u', '--tunnel', help='name of the SauceLabs tunnel')
+base_parser.add_argument('--additional-args', help='additional arguments to pass directly to the test runner, e.g. -a "-a, --b=test, -c"')
 
 
 yoga_nose_argparser = argparse.ArgumentParser(description='Run tests using nose', parents=[base_parser])
@@ -53,7 +54,8 @@ def nose_args(args):
         argv.append('tests/')
     if args.attributes:
         argv.extend(['-A', args.attributes])
-    print(argv)
+    if args.additional_args:
+        args.extend(args.additional_args.split(', '))
     return argv
 
 
@@ -64,7 +66,9 @@ def pytest_args(cmd_line_args):
     if cmd_line_args.mark_expression:
         args.extend(['-m', cmd_line_args.mark_expression])
     if cmd_line_args.debug:
-        args.extend(['--pdb'])
+        args.extend(['--pdb', '--pdbcls=IPython.terminal.debugger:TerminalPdb'])
+    if cmd_line_args.additional_args:
+        args.extend(cmd_line_args.additional_args.split(', '))
     return args
 
 
@@ -72,5 +76,8 @@ def behave_args(cmd_line_args):
     args = [cmd_line_args.features_dir]
     if cmd_line_args.tags:
         args.extend(['-t', cmd_line_args.tags])
+    if cmd_line_args.additional_args:
+        args.extend(cmd_line_args.additional_args.split(', '))
+    return args
 
 
