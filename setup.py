@@ -17,7 +17,9 @@ setup(name='yoga', version='0.1', description='the flexible automation framework
         'ipdb==0.12',
         'boto3==1.9.183',
         'PyMySQL==0.9.3',
-        'pystunnel==1.0a1'
+        'pystunnel==1.0a1',
+        'PyYAML==5.1',
+        'Cerberus==1.3.1'
       ],
       setup_requires=["pytest-runner"],
       tests_require=["pytest"]
