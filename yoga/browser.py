@@ -214,6 +214,10 @@ class Browser(object):
         return self.driver.find_element(*locator).text
 
     @handle_staleness()
+    def get_element_text_ignoring_hidden_state(self, locator: Locator):
+        return self.driver.find_element(*locator).get_attribute('textContent')
+
+    @handle_staleness()
     def get_element_value(self, locator: Locator):
         return self.driver.find_element(*locator).get_attribute('value')
 
