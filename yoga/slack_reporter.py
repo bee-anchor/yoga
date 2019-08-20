@@ -16,12 +16,10 @@ class SlackReporter:
                  "color": "#D00000",
                  "fields": [
                     {
-                       "title": f"APP: {self.app_name}, ENV: {self.env}",
-                       "value": f"DETAILS - {caps_or_browser}",
+                       "title": f"APP: {self.app_name}, DETAILS: env: {self.env} {caps_or_browser}",
                        "short": False
                     },
                     {
-                       "title": "Failure Info",
                        "value": failure_info,
                        "short": False
                     }
