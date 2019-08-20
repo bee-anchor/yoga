@@ -4,7 +4,7 @@ setup(name='yoga', version='0.1', description='the flexible automation framework
       url='https://bitbucket.org/infinityworksconsulting/yoga',
       author='Bianca Linscott',
       packages=['yoga'],
-      package_data={'yoga': ['resources/*', 'remote/*', 'data/*']},
+      package_data={'yoga': ['resources/*', 'remote/*', 'data/*', 'pytest/*']},
       install_requires=[
         'Appium-Python-Client==0.46',
         'selenium==3.141.0',
