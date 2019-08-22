@@ -19,7 +19,7 @@ def step(description):
         @functools.wraps(func)
         def wrapper_step(*args, desc_print=True, **kwargs):
             if desc_print:
-                print(Fore.LIGHTMAGENTA_EX + description.format(*args) + Fore.RESET)
+                print(Fore.LIGHTMAGENTA_EX + description.format(*args, *list(kwargs.values())) + Fore.RESET)
             return func(*args, **kwargs)
         return wrapper_step
     return decorator_step
