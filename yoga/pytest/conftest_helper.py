@@ -92,5 +92,5 @@ class ConfTestHelper:
             if info['outcome'] == 'failed':
                 failure_info += f"*_{test}_*\n"
                 if info['s3_screenshot']:
-                    failure_info += f"Screenshot: {info['s3_screenshot']}"
+                    failure_info += f"Screenshot: {info['s3_screenshot']}\n"
         slack_reporter.report_test_failure(env_details, failure_info)
