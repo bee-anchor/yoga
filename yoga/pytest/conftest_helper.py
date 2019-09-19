@@ -3,6 +3,7 @@ from pluggy.callers import _Result
 from _pytest.reports import TestReport
 import time
 import os
+import socket
 from yoga.context import CONTEXT
 from yoga.remote.sauce_helper import SauceHelper
 from yoga.slack_reporter import SlackReporter
@@ -48,7 +49,7 @@ class ConfTestHelper:
             self._report_outcome_to_slack()
 
     def _failed_test_item_action(self, rep: TestReport, execution_type: str) -> None:
-        file_name = f"{rep.when}__{rep.head_line}_{int(time.time())}.png"
+        file_name = f"{rep.when}__{rep.head_line}_{int(time.time())}_{socket.gethostname()}.png"
         if execution_type in {'selenium_remote', 'appium_remote', 'grid_remote'}:
             try:
                 self.results[rep.head_line]['s3_screenshot'] = upload_screenshot_to_s3(
