@@ -27,6 +27,7 @@ yoga_pytest_argparser = argparse.ArgumentParser(description='Run tests using pyt
 yoga_pytest_argparser.add_argument('--test-dir', default="tests/", help="directory containing tests to run, default is 'tests'")
 yoga_pytest_argparser.add_argument('-k', '--keyword-expression', help='only run tests which match the given substring expression (same as pytest -k)')
 yoga_pytest_argparser.add_argument('-m', '--mark-expression', help='only run tests matching given mark expression')
+yoga_pytest_argparser.add_argument('-r', '--reruns', help='re-run failed tests x times')
 
 yoga_behave_argparser = argparse.ArgumentParser(description='Run tests using behave', parents=[base_parser])
 yoga_behave_argparser.add_argument('-f', '--features_dir', default="features/", required=True, help='path to the features directory, the directory containing behave tests and steps')
@@ -67,6 +68,8 @@ def pytest_args(cmd_line_args):
         args.extend(['-m', cmd_line_args.mark_expression])
     if cmd_line_args.debug:
         args.extend(['--pdb', '--pdbcls=IPython.terminal.debugger:TerminalPdb'])
+    if cmd_line_args.reruns:
+        args.extend(['--reruns', cmd_line_args.reruns])
     if cmd_line_args.additional_args:
         args.extend(cmd_line_args.additional_args.split(', '))
     return args

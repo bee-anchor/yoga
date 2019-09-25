@@ -1,4 +1,3 @@
-from typing import List
 from pluggy.callers import _Result
 from _pytest.reports import TestReport
 import time
@@ -26,7 +25,7 @@ class ConfTestHelper:
     def test_outcomes(self):
         return list(map(lambda result: result['outcome'], self.results.values()))
 
-    def hook_pytest_runtest_makereport(self, outcome: _Result):
+    def hook_pytest_runtest_makereport(self, outcome: _Result, item, call):
         # hook to handle actions to take when test outcomes are available
         rep: TestReport = outcome.get_result()
 
@@ -42,7 +41,7 @@ class ConfTestHelper:
         if rep.outcome == 'failed':
             self._failed_test_item_action(rep, CONTEXT.args.execution)
 
-    def fixture_end_of_test_actions(self):
+    def hook_pytest_sessionfinish(self, session, exitstatus):
         if CONTEXT.args.execution in {'selenium_remote', 'appium_remote'}:
             self._report_outcome_to_sauce()
         if CONTEXT.args.slack_report and 'failed' in self.test_outcomes():

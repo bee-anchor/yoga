@@ -165,6 +165,7 @@ Yoga includes some very useful dependencies for such test types, including:
 | --test-dir |no| path to tests, default is `tests/`|
 | -k |no| keyword filter, to only run test containing this string in their name|
 | -m |no| mark filter, to only run tests that are marked as the pattern used dictates|
+| -r |no| retry handler, will retry failed tests x times before counting as a failure and reporting to slack|
 
 ## Running tests (assuming using pytest runner)
 
