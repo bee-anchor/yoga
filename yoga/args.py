@@ -1,10 +1,7 @@
 import argparse
 
 base_parser = argparse.ArgumentParser(add_help=False)
-base_parser.add_argument('-d', '--debug', action='store_true',
-                         help='run in debug mode')
 base_parser.add_argument('-c', '--config', default='config.ini', help="config file to use, defaults to 'config.ini'")
-base_parser.add_argument('-o', '--override', nargs='+', help='config value override e.g. -o section.option=value section.option2=value2  (overrides after environment config modification, so to override env url would be environment.url=https://app.test)')
 base_parser.add_argument('-e', '--environment', required=True, help='environment to run in')
 base_parser.add_argument('-x', '--execution', required=True,
                          choices=['selenium_local', 'selenium_remote', 'appium_local', 'appium_remote', 'appium_remote_real', 'grid_local', 'grid_remote', 'non-ui'],
@@ -14,7 +11,10 @@ base_parser.add_argument('-b', '--browser', choices=['chrome', 'firefox', 'inter
 base_parser.add_argument('-p', '--capability', help='which capability to use from relevant capabilities file (remote|local)')
 base_parser.add_argument('-l', '--local-capabilities-file', default="local_capabilities.ini", help='path of local capabilities file (default is local_capabilities.ini)')
 base_parser.add_argument('-s', '--slack_report', action='store_true', help='report test outcome to slack')
+base_parser.add_argument('-o', '--override', nargs='+', help='config value override e.g. -o section.option=value section.option2=value2  (overrides after environment config modification, so to override env url would be environment.url=https://app.test)')
 base_parser.add_argument('-u', '--tunnel', help='name of the SauceLabs tunnel')
+base_parser.add_argument('-d', '--debug', action='store_true',
+                         help='run in debug mode')
 base_parser.add_argument('--additional-args', help='additional arguments to pass directly to the test runner, e.g. -a "-a, --b=test, -c"')
 
 

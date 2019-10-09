@@ -64,62 +64,31 @@ pytest
 You can write tests it whatever way you want, for the test runner you are using. Some libraries are installed as part of yoga which you will find useful:
 * colorama - allows you to colour text on the console
 * assertpy - more powerful assertion library which will give you useful error messages when assertions fail
-* pdbpp - a better python debugger that will automatically be used in place of pdb - it has autocomplete!
+* ipdb - a better python debugger that will automatically be used in place of pdb - it has autocomplete!
 
 ### After test actions
 
-You will need to do some manual setup for you tests to support saucelabs test runs, screenshot uploading and slack reporting, in the form of actions that are taken at the end of the test run. This will depend on the test runner you use, and how it can support it.
-For pytest, you can use it's hooks and fixtures to do the actions. The example code you will need is:
+You will need to do some manual setup for you tests to support saucelabs test runs,
+screenshot uploading and slack reporting (if you want any of this),
+in the form of actions that are taken at the end of the test run.
+
+This will depend on the test runner you use, and how it can support it.
+
+For pytest, you can use it's hooks and fixtures to do the actions. There are helpers
+already created you can use in the `pytest/conftest_helpers.py` file.
+
+Example code for how to use these (this code needs to be in you `conftest.py` file):
 
 ```python
-results = []
-s3_screenshots = []
-
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    # hook to handle actions to take when test outcomes are available
     outcome = yield
-    rep = outcome.get_result()
-
-    if CONTEXT.args.execution == 'grid_remote':
-        if rep.outcome == 'failed':
-            name = f"{rep.when}__{rep.location[-1]}_{int(time.time())}.png"
-            try:
-                s3_screenshots.append(
-                    (upload_screenshot_to_s3(CONTEXT.config['application']['name'] + '/' + name,
-                                             CONTEXT.driver.get_screenshot_as_png(),
-                                             CONTEXT.config['remote_grid']['remote_screenshot_s3_bucket'],
-                                             CONTEXT.config['remote_grid']['s3_access_key'],
-                                             CONTEXT.config['remote_grid']['s3_secret_access_key']),
-                     rep.location[-1]))
-            except:
-                print('Failed to upload screenshot')
-
-    if rep.when == "call":
-        results.append(rep.outcome)
+    conftest_helper.hook_pytest_runtest_makereport(outcome, item, call)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def end_of_test_actions():
-    yield
-    if CONTEXT.args.execution in {'selenium_remote', 'appium_remote'}:
-        if 'failed' in results:
-            SauceHelper().report_outcome(CONTEXT.driver.session_id, False)
-        else:
-            SauceHelper().report_outcome(CONTEXT.driver.session_id, True)
-    if CONTEXT.args.slack_report and 'failed' in results:
-        slack_reporter = SlackReporter(CONTEXT.config['slack']['webhook'],
-                                       CONTEXT.config['application']['name'],
-                                       CONTEXT.args.environment)
-        if CONTEXT.args.execution in {'selenium_remote', 'appium_remote'}:
-            results_url = f"{CONTEXT.config['remote_service']['results_url']}/{CONTEXT.driver.session_id}"
-            slack_reporter.report_test_failure(
-                Capabilities(CONTEXT.args).get_formatted_remote_capabilities(), results_url)
-        elif CONTEXT.args.execution == 'grid_remote':
-            info = ""
-            for url, name in s3_screenshots:
-                info += f"<Screenshot for -  {url}|{name}>\n"
-            slack_reporter.report_test_failure(CONTEXT.args.browser, info)
+@pytest.hookimpl()
+def pytest_sessionfinish(session, exitstatus):
+    conftest_helper.hook_pytest_sessionfinish(session, exitstatus)
 ```
 The critical part is that you report the job outcome to saucelabs and slack when it is appropriate, and take and save screenshots when appropriate
 
@@ -133,11 +102,12 @@ Because yoga is more of a library of core useful features and setup, and a wrapp
 * even unit tests if you so desired
 
 All that may be needed is finding a python library to support you in this endeavour.
-Yoga includes some very useful dependencies for such test types, including:
+Yoga includes some very useful dependencies for some test types, including:
 * requests - for API tests
 * PyMySQL - for tests against MySQL databases
+* cerberus - for validating json schemas in API tests
 
-# Running Automation Tests
+# Running Tests
 
 ## Command line arguments
 
@@ -152,20 +122,22 @@ Yoga includes some very useful dependencies for such test types, including:
 | -e --environment |yes| environment to run tests in, must have a section in the config.ini |
 | -x --execution |yes| execution type, one of selenium_local, selenium_remote, appium_local, appium_remote, grid_local, grid_remote, non-ui|
 | -b --browser |yes - with selenium_local execution type| browser to run tests on (if not using non-ui execution type) one of chrome, firefox, internet explorer, safari, edge|
-| -p --capabilities |yes - with appium or remote execution types|  which capabilities to use from relevant capabilities file (remote/local) when running using remote or any appium execution type|
+| -p --capability |yes - with appium or remote execution types|  which capabilities to use from relevant capabilities file (remote/local) when running using remote or any appium execution type|
 | -l --local_capabilities_file |no| path of local capabilities file, defaults to `local_capabilities.ini` |
 | -s --slack_report |no| turn on slack reporting of test outcomes|
 | -o --override |no| config value override e.g. -o section.option=value section.option2=value2. Overrides after environment config modifications, so to override env url would be e.g. environment.url=https://app.test|
+| -u --tunnel |no| name of a SauceLabs tunnel if needing to use one|
 | -d --debug |no| run in debug mode - will drop you into debugger on test failure. DO NOT USE ON CI! |
+| --additional-args |no| additional arguments that you want to pass directly to the test runner e.g. "-a, --b=test, -c" |
 
 #### Pytest specific arguments:
 
 | Arg |Required| Description|
 |:----|:-------|:----------|
 | --test-dir |no| path to tests, default is `tests/`|
-| -k |no| keyword filter, to only run test containing this string in their name|
-| -m |no| mark filter, to only run tests that are marked as the pattern used dictates|
-| -r |no| retry handler, will retry failed tests x times before counting as a failure and reporting to slack|
+| -k --keyword-expression |no| keyword filter, to only run test containing this string in their name|
+| -m --mar-expression |no| mark filter, to only run tests that are marked as the pattern used dictates|
+| -r --reruns |no| retry handler, will rerun failed tests x times before counting as a failure and reporting to slack - helps with UI flakiness|
 
 ## Running tests (assuming using pytest runner)
 
@@ -177,7 +149,7 @@ Yoga includes some very useful dependencies for such test types, including:
 |`python3 run.py -e test -x selenium_local -b chrome -d -k login_logout`| run locally on chrome in debug mode where tests contain 'login_logout' in their name|
 |`python3 run.py -e test -x selenium_local -b chrome -d -m desktop`| run locally on chrome where tests are marked with 'desktop'|
 |`python3 run.py -e test -x appium_local -p iphone7`|run tests locally using appium, on the device specified in the local_capabilities.ini file as 'iphone7' (appium and the correct simulator need to be running first)|
-|`python3 run.py -e test -x grid_local -b "internet explorer"`|run tests on an internet explorer browser connected to a locally running selenium grid (can use this to run tests on virtual machines)|
+|`python3 run.py -e test -x grid_local -b "internet explorer"`|run tests on an internet explorer browser connected to a locally running selenium grid (can also use this to run tests on virtual machines)|
 |`python3 run.py -e test -x selenium_remote -p windows10chrome -s`|run tests remotely on saucelabs using the remote capabilities specified by the windows10chrome section, and report a test failure to slack|
 |`python3 run.py -e test -x appium_remote -p android6`|run tests remotely on saucelabs using the remote capabilities specified by the android6 section|
 |`python3 run.py -e test -x grid_remote -b chrome`|run tests on a remote selenium grid, on an attached chrome browser node |
