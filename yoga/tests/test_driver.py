@@ -110,16 +110,16 @@ class TestDriver:
         mock_context.config = test_config
         args = Namespace(execution='appium_remote_real', capability='iphone8real')
         desired_capabilities = {
-            'browserName' : 'Safari',
-            'appiumVersion' : '1.9.1',
-            'deviceName' : 'iPhone 8',
-            'deviceOrientation' : 'portrait',
-            'platformVersion' : '12.1.4',
-            'platformName' : 'iOS',
-            'safariAllowPopups' : 'true',
-            'nativeWebTap' : 'true',
-            'autoDismissAlerts' : 'true',
-            'testobject_api_key' : '12345',
+            'browserName': 'Safari',
+            'appiumVersion': '1.9.1',
+            'deviceName': 'iPhone 8',
+            'deviceOrientation': 'portrait',
+            'platformVersion': '12.1.4',
+            'platformName': 'iOS',
+            'safariAllowPopups': 'true',
+            'nativeWebTap': 'true',
+            'autoDismissAlerts': 'true',
+            'testobject_api_key': '12345',
             'idleTimeout': '100'
         }
 
@@ -128,7 +128,8 @@ class TestDriver:
             yoga.driver.Driver(args).get_driver()
             patched_set_saucelabs_name.assert_called_with('1234')
 
-        self.mock_appium_webdriver.Remote.assert_called_with("http://eu1.appium.testobject.com/wd/hub", desired_capabilities)
+        self.mock_appium_webdriver.Remote.assert_called_with("http://eu1.appium.testobject.com/wd/hub",
+                                                             desired_capabilities)
 
     @patch('yoga.driver.CONTEXT')
     def test_create_remote_hubdriver(self, mock_context):
@@ -165,5 +166,3 @@ class TestDriver:
 
         with pytest.raises(KeyError, match='Remote capabilities config does not have section for selection: unknown'):
             yoga.driver.Driver(args).get_driver()
-
-

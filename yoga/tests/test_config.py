@@ -17,16 +17,16 @@ class TestConfig():
                 job_timeout = 300
                 username = username
                 access_key = accesskey
-                
+
                 [slack]
                 webhook = https://hooks.slack.com/services/hookhookhook
-                
+
                 [application]
                 name = test
-                
+
                 [environment.local]
                 url = https://testsite.com
-                
+
                 [environment.test]
                 url = https://testsite.com
                 ''')
@@ -54,7 +54,7 @@ class TestConfig():
                                match="Missing 'application' section in the config"):
                 Config(args).setup()
 
-    def test_config_setup_raises_exception_for_missing_application_config_section(self):
+    def test_config_setup_raises_exception_for_missing_application_config_option(self):
         with tempfile.NamedTemporaryFile() as config:
             config.write(
                 b'''[application]
@@ -77,7 +77,8 @@ class TestConfig():
             args = Namespace(config=config.name, execution='selenium_remote')
 
             with pytest.raises(KeyError,
-                               match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\]'):
+                               match=r'Missing config for execution type of selenium_remote/appium_remote: '
+                                     r'\[remote_service\]'):
                 Config(args).setup()
 
     def test_config_setup_raises_exception_for_missing_selenium_remote_config_option(self):
@@ -88,7 +89,7 @@ class TestConfig():
                 results_url = https://saucelabs.com/beta/tests
                 job_timeout = "00
                 access_key = accesskey
-                
+
                 [application]
                 name = test
                 ''')
@@ -96,7 +97,8 @@ class TestConfig():
             args = Namespace(config=config.name, execution='selenium_remote')
 
             with pytest.raises(KeyError,
-                               match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\] username'):
+                               match=r'Missing config for execution type of selenium_remote/appium_remote: '
+                                     r'\[remote_service\] username'):
                 Config(args).setup()
 
     def test_config_setup_raises_exception_for_missing_appium_remote_config_option(self):
@@ -107,7 +109,7 @@ class TestConfig():
                 job_timeout = "00
                 username = username
                 access_key = accesskey
-                
+
                 [application]
                 name = test
                 ''')
@@ -115,7 +117,8 @@ class TestConfig():
             args = Namespace(config=config.name, execution='appium_remote')
 
             with pytest.raises(KeyError,
-                               match='Missing config for execution type of selenium_remote/appium_remote: \[remote_service\] remote_url'):
+                               match=r'Missing config for execution type of selenium_remote/appium_remote: '
+                                     r'\[remote_service\] remote_url'):
                 Config(args).setup()
 
     def test_config_setup_raises_exception_for_missing_appium_remote_real_config_option(self):
@@ -133,7 +136,8 @@ class TestConfig():
             args = Namespace(config=config.name, execution='appium_remote_real')
 
             with pytest.raises(KeyError,
-                               match='Missing config for execution type of appium_remote_real: \[remote_service\] api_url'):
+                               match=r'Missing config for execution type of appium_remote_real: '
+                                     r'\[remote_service\] api_url'):
                 Config(args).setup()
 
     def test_config_setup_raises_exception_for_missing_env_config_section(self):
@@ -145,10 +149,10 @@ class TestConfig():
                 job_timeout = 300
                 username = username
                 access_key = accesskey
-                
+
                 [application]
                 name = test
-                
+
                 [environment.test]
                 url = https://testsite.com
                 ''')
@@ -157,7 +161,8 @@ class TestConfig():
                              browser='chrome')
 
             with pytest.raises(KeyError,
-                               match=f'Missing environment config for selected env of local, section required: \[environment.local\]'):
+                               match=r'Missing environment config for selected env of local, section required: '
+                                     r'\[environment.local\]'):
                 Config(args).setup()
 
     def test_config_setup_adds_all_chosen_env_config_and_removes_others(self):
@@ -169,13 +174,13 @@ class TestConfig():
                 job_timeout = 300
                 username = username
                 access_key = accesskey
-                
+
                 [application]
                 name = test
-                
+
                 [environment.local]
                 url = https://testsite.com
-                
+
                 [environment.test]
                 url = https://testsite.com
                 ''')
@@ -198,13 +203,13 @@ class TestConfig():
                 job_timeout = 300
                 username = username
                 access_key = accesskey
-                
+
                 [application]
                 name = test
-                
+
                 [environment.local]
                 url = https://testsite.com
-                
+
                 [environment.test]
                 url = https://testsite.com
                 ''')
@@ -225,13 +230,13 @@ class TestConfig():
                 job_timeout = 300
                 username = username
                 access_key = accesskey
-                
+
                 [application]
                 name = test
-                
+
                 [environment.local]
                 url = https://testsite.com
-                
+
                 [environment.test]
                 url = https://testsite.com
                 ''')
@@ -253,13 +258,13 @@ class TestConfig():
                 job_timeout = 300
                 username = username
                 access_key = accesskey
-                
+
                 [application]
                 name = test
-                
+
                 [environment.local]
                 url = https://testsite.com
-                
+
                 [environment.test]
                 url = https://testsite.com
                 ''')
@@ -271,4 +276,3 @@ class TestConfig():
                                match=("Cannot override config using provided argument of 'environment.test=test',"
                                       " there is no config option of 'test' in the 'environment' section")):
                 Config(args).setup()
-

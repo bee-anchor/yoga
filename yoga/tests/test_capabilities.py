@@ -11,17 +11,16 @@ class TestCapabilities:
     def cap_file_setup(self):
         file = tempfile.NamedTemporaryFile()
         file.write(
-        b'''[windows10chrome]
-        browserName = chrome
-        platform = Windows 10
-        version = 68.0
-        
-        [android6]
-        platformName = Android
-        platformVersion = 6.0
-        deviceName = Android Emulator
-        browserName = Browser
-        ''')
+            b'''[windows10chrome]
+            browserName = chrome
+            platform = Windows 10
+            version = 68.0
+            [android6]
+            platformName = Android
+            platformVersion = 6.0
+            deviceName = Android Emulator
+            browserName = Browser
+            ''')
         file.flush()
         self.temp_caps_file = file.name
         yield
@@ -43,7 +42,6 @@ class TestCapabilities:
         with pytest.raises(KeyError, match='Local capabilities config does not have section for selection: andrude6'):
             yoga.capabilities.Capabilities(args).get_local_capabilities()
 
-
     def test_get_remote_caps(self):
         args = Namespace(capability='windows10chrome')
         with patch('yoga.capabilities.os') as mock_os:
@@ -60,9 +58,10 @@ class TestCapabilities:
         args = Namespace(capability='windows10unknown')
         with patch('yoga.capabilities.os') as mock_os:
             mock_os.path.join.return_value = self.temp_caps_file
-            with pytest.raises(KeyError, match='Remote capabilities config does not have section for selection: windows10unknown'):
+            with pytest.raises(KeyError,
+                               match='Remote capabilities config does not have section for selection: windows10unknown'):
                 yoga.capabilities.Capabilities(args).get_remote_capabilities()
-        
+
     def test_get_formatted_local_caps(self):
         args = Namespace(local_capabilities_file=self.temp_caps_file, capability='android6')
         caps = yoga.capabilities.Capabilities(args).get_formatted_local_capabilities()

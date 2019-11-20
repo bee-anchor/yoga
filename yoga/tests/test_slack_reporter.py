@@ -1,5 +1,4 @@
 import yoga.slack_reporter
-import configparser
 from unittest.mock import patch
 
 
@@ -18,12 +17,10 @@ class TestSlackReporter:
                     "color": "#D00000",
                     "fields": [
                         {
-                            "title": "APP: test, ENV: test",
-                            "value": "DETAILS - chrome",
+                            "title": "APP: test, DETAILS: env: test chrome",
                             "short": False
                         },
                         {
-                            "title": "Failure Info",
                             "value": "failed",
                             "short": False
                         }

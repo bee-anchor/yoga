@@ -23,7 +23,9 @@ def handle_staleness(retry_pause=0.5):
             except StaleElementReferenceException:
                 sleep(retry_pause)
                 return func(*args, **kwargs)
+
         return func_wrapped
+
     return staleness_decorator
 
 
@@ -131,14 +133,16 @@ class WaitUntil(object):
     def exists_with_regex(locator: Locator, regex, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.element_to_be_present_with_regex(locator, regex),
-            f"Element with {locator.find_method} of '{locator.selector}' and text matching regex '{regex}' does not exist"
+            f"Element with {locator.find_method} of '{locator.selector}'"
+            f"and text matching regex '{regex}' does not exist"
         )
 
     @staticmethod
     def not_exists_with_regex(locator: Locator, regex, timeout=10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.element_to_be_present_with_regex(locator, regex),
-            f"Element with {locator.find_method} of '{locator.selector}' and text matching regex '{regex}' exists, but should not"
+            f"Element with {locator.find_method} of '{locator.selector}'"
+            f"and text matching regex '{regex}' exists, but should not"
         )
 
     @staticmethod
@@ -235,7 +239,8 @@ class Browser(object):
         for elem in elements:
             if elem.text == text:
                 return elem
-        raise NoSuchElementException(f'Unable to find element with {locator.find_method} of {locator.selector} and text of {text}')
+        raise NoSuchElementException(
+            f'Unable to find element with {locator.find_method} of {locator.selector} and text of {text}')
 
     def get_element_location(self, locator: Locator):
         elem = self.get_element(locator)
@@ -288,7 +293,8 @@ class Browser(object):
         self.driver.execute_script(f"window.scrollTo(window.scrollX, {loc})")
 
     def is_mobile_device(self):
-        return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] in ['Android', 'iOS']
+        return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] in ['Android',
+                                                                                                           'iOS']
 
     def is_ios_device(self):
         return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] == 'iOS'
@@ -297,14 +303,14 @@ class Browser(object):
         return 'platformName' in self.driver.capabilities and self.driver.capabilities['platformName'] == 'Android'
 
     def is_safari(self):
-        return 'browserName' in self.driver.capabilities and self.driver.capabilities['browserName'] in ['Safari', 'safari']
+        return 'browserName' in self.driver.capabilities and self.driver.capabilities['browserName'] in ['Safari',
+                                                                                                         'safari']
 
     def delete_cookie(self, cookie_name):
         self.driver.delete_cookie(cookie_name)
 
     def delete_all_cookies(self):
         self.driver.delete_all_cookies()
-
 
     @staticmethod
     def retry_until_true(action_func, predicate_func, timeout=10):
@@ -317,7 +323,7 @@ class Browser(object):
                     action_func()
                 else:
                     return
-            except:
+            except Exception:
                 continue
         raise TimeoutError("timeout waiting for predicate to become true")
 
@@ -341,7 +347,7 @@ class Browser(object):
             try:
                 if condition_function():
                     return True
-            except:
+            except Exception:
                 continue
             else:
                 sleep(0.1)
@@ -354,4 +360,3 @@ class Browser(object):
         old_page = self.driver.find_element_by_tag_name('html')
         yield
         WebDriverWait(self.driver, timeout=timeout).until(expected_conditions.staleness_of(old_page))
-

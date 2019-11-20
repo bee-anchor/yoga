@@ -77,7 +77,7 @@ class Driver(object):
         if driver_type == 'selenium' or driver_type == 'appium':
             username = CONTEXT.config['remote_service']['username']
             access_key = CONTEXT.config['remote_service']['access_key']
-            command_executor = f"http://{username}:{access_key}@{url}" 
+            command_executor = f"http://{username}:{access_key}@{url}"
 
         desired_capabilities = Capabilities(self.args).get_remote_capabilities()
         desired_capabilities['idleTimeout'] = CONTEXT.config['remote_service']['job_timeout']
@@ -85,9 +85,9 @@ class Driver(object):
         if driver_type == 'appium_real':
             desired_capabilities['testobject_api_key'] = CONTEXT.config['remote_service']['testobject_api_key']
 
-        if self.args.tunnel:
+        if 'tunnel' in self.args and self.args.tunnel:
             desired_capabilities['tunnelIdentifier'] = self.args.tunnel
-            
+
         self.capabilities = desired_capabilities
 
         if driver_type == 'selenium':
@@ -120,7 +120,6 @@ class Driver(object):
             'browserName': self.args.browser
         }
         return webdriver.Remote(command_executor, desired_capabilities)
-
 
     def __name_saucelabs_job(self, session_id):
         caps = Capabilities(self.args).get_formatted_remote_capabilities()

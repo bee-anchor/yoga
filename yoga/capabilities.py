@@ -22,7 +22,7 @@ class Capabilities:
 
     def get_remote_capabilities(self):
         remote_caps_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                      'remote', 'capabilities.ini')
+                                            'remote', 'capabilities.ini')
         caps = self.__read_caps_file(remote_caps_filepath)
         if not caps.has_section(self.args.capability):
             raise KeyError(f'Remote capabilities config does not have section for selection: {self.args.capability}')

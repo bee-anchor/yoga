@@ -40,28 +40,38 @@ class Config(object):
         if not os.path.exists(self.config_file_path):
             raise FileNotFoundError(f'Configuration file "{self.config_file_path}" not found, check the path provided')
 
+    def __validate_remote(self):
+        expected_keys = ['remote_url', 'results_url', 'job_timeout', 'username', 'access_key']
+        for key in expected_keys:
+            if not self.config.has_option('remote_service', key):
+                raise KeyError(
+                    f'Missing config for execution type of selenium_remote/appium_remote: [remote_service] {key}')
+
+    def __validate_appium_real(self):
+        expected_keys = ['remote_url', 'api_url', 'results_url', 'job_timeout', 'testobject_api_key']
+        for key in expected_keys:
+            if not self.config.has_option('remote_service', key):
+                raise KeyError(f'Missing config for execution type of appium_remote_real: [remote_service] {key}')
+
+    def __validate_grid(self):
+        if not self.config.has_section('remote_grid'):
+            raise KeyError(f"Missing 'remote_grid' section in the config")
+        expected_keys = ['remote_url', 'remote_screenshot_s3_bucket']
+        for key in expected_keys:
+            if not self.config.has_option('remote_grid', key):
+                raise KeyError(f'Missing config for execution type of grid_remote: [remote_grid] {key}')
+
     def __validate_config(self):
         if not self.config.has_section('application'):
             raise KeyError(f"Missing 'application' section in the config")
         if not self.config.has_option('application', 'name'):
             raise KeyError(f"Missing 'name' option in the application section in the config")
         if self.args.execution in {'selenium_remote', 'appium_remote'}:
-            expected_keys = ['remote_url', 'results_url', 'job_timeout', 'username', 'access_key']
-            for key in expected_keys:
-                if not self.config.has_option('remote_service', key):
-                    raise KeyError(f'Missing config for execution type of selenium_remote/appium_remote: [remote_service] {key}')
+            self.__validate_remote()
         elif self.args.execution == 'appium_remote_real':
-            expected_keys = ['remote_url', 'api_url', 'results_url', 'job_timeout', 'testobject_api_key']
-            for key in expected_keys:
-                if not self.config.has_option('remote_service', key):
-                    raise KeyError(f'Missing config for execution type of appium_remote_real: [remote_service] {key}')
+            self.__validate_appium_real()
         elif self.args.execution == 'grid_remote':
-            if not self.config.has_section('remote_grid'):
-                raise KeyError(f"Missing 'remote_grid' section in the config")
-            expected_keys = ['remote_url', 'remote_screenshot_s3_bucket']
-            for key in expected_keys:
-                if not self.config.has_option('remote_grid', key):
-                    raise KeyError(f'Missing config for execution type of grid_remote: [remote_grid] {key}')
+            self.__validate_grid()
 
     def __set_env_config(self):
         if not self.config.has_section(f'environment.{self.args.environment}'):
@@ -99,6 +109,3 @@ class Config(object):
 
     def __set_config(self):
         CONTEXT.update_config(self.config)
-
-
-

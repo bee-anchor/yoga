@@ -24,4 +24,3 @@ class SauceHelper:
         url = self.rest_api + f"/v1/{self.username}/jobs/{session_id}"
         body = {"name": name}
         requests.put(url, json=body, headers=self.headers, auth=self.auth())
-

@@ -10,7 +10,9 @@ def scenario(description):
                 print(Fore.CYAN + '\n-----------------------------------------------------')
                 print(Fore.LIGHTCYAN_EX + description + Fore.RESET)
             return func(*args, **kwargs)
+
         return wrapper_test
+
     return decorator_test
 
 
@@ -21,8 +23,7 @@ def step(description):
             if desc_print:
                 print(Fore.LIGHTMAGENTA_EX + description.format(*args, *list(kwargs.values())) + Fore.RESET)
             return func(*args, **kwargs)
+
         return wrapper_step
+
     return decorator_step
-
-
-
