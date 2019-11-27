@@ -44,10 +44,10 @@ python3 run.py -e test -x selenium_local -b chrome
 * This uses python's standard INI file format with the configparser library.
 * Config is divided into sections (denoted by text in square brackets) and the key value pairs belonging to those sections.
 * All sections and key value pairs in the example config are required, although technically only one environment section is actually required (but the two defined will be wanted in most cases).
-* All config values can be accessed within tests via the `CONTEXT.config` object e.g. `CONTEXT.config[<section>][<key>]`.
-* The multiple `environment.env` sections in the INI file will be reduced to just one called `environment` at runtime, which will contain the env config for the env specified and is therefore accessed by just `CONTEXT.config['environment'][<key>]`.
+* All config values can be accessed within tests via the `CONTEXT.config` object e.g. `CONTEXT.config.get(section, option)`.
+* The multiple `environment.env` sections in the INI file will be reduced to just one called `environment` at runtime, which will contain the env config for the env specified and is therefore accessed by just `CONTEXT.config.get('environment', option)`.
 * You can add anything you may need to the config, just don't remove any of the required items.
-* Environment variables can be used in the config values using interpolation, with syntax of `${}`. e.g. `key = testvaluewith${interploated}`
+* Environment variables can be used in the config values using interpolation, with syntax of `${}`. e.g. `option = testvaluewith${interploated}`
 
 ## The local_capabilities.ini
 * Stores capabilities for running appium tests locally, add these as required. There is an example one in `resources`
@@ -61,15 +61,12 @@ pytest
 
 # Writing tests
 
-You can write tests it whatever way you want, for the test runner you are using. Some libraries are installed as part of yoga which you will find useful:
-* colorama - allows you to colour text on the console
-* assertpy - more powerful assertion library which will give you useful error messages when assertions fail
-* ipdb - a better python debugger that will automatically be used in place of pdb - it has autocomplete!
+You can write tests it whatever way you want, for the test runner you are using. Some libraries are installed as part of yoga which you may find useful. Check the requirements.txt file.
 
 ### After test actions
 
 You will need to do some manual setup for you tests to support saucelabs test runs,
-screenshot uploading and slack reporting (if you want any of this),
+screenshot uploading, and slack reporting (if you want any of this)
 in the form of actions that are taken at the end of the test run.
 
 This will depend on the test runner you use, and how it can support it.
@@ -90,7 +87,6 @@ def pytest_runtest_makereport(item, call):
 def pytest_sessionfinish(session, exitstatus):
     conftest_helper.hook_pytest_sessionfinish(session, exitstatus)
 ```
-The critical part is that you report the job outcome to saucelabs and slack when it is appropriate, and take and save screenshots when appropriate
 
 ## Types of tests supported
 
@@ -103,6 +99,7 @@ Because yoga is more of a library of core useful features and setup, and a wrapp
 
 All that may be needed is finding a python library to support you in this endeavour.
 Yoga includes some very useful dependencies for some test types, including:
+* selenium, appium - for UI tests
 * requests - for API tests
 * PyMySQL - for tests against MySQL databases
 * cerberus - for validating json schemas in API tests
