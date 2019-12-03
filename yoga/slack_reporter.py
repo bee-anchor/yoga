@@ -3,12 +3,12 @@ import requests
 
 class SlackReporter:
 
-    def __init__(self, webhook_url, app_name, env):
+    def __init__(self, webhook_url: str, app_name: str, env: str):
         self.url = webhook_url
         self.app_name = app_name
         self.env = env
 
-    def report_test_failure(self, caps_or_browser, failure_info):
+    def report_test_failure(self, caps_or_browser: str, failure_info: str):
         payload = {
             "attachments": [
                 {

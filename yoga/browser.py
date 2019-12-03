@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Union
+from typing import Union, List, AnyStr, Callable, Any, Tuple
 from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -32,105 +32,105 @@ def handle_staleness(retry_pause=0.5):
 class WaitUntil(object):
 
     @staticmethod
-    def title_is(title, timeout=10):
+    def title_is(title: str, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.title_is(title),
             f"Page title was not '{title}' as expected"
         )
 
     @staticmethod
-    def title_contains(title, timeout=10):
+    def title_contains(title: str, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.title_is(title),
             f"Page title did not contain '{title}' as expected"
         )
 
     @staticmethod
-    def url_is(url, timeout=10):
+    def url_is(url: str, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.url_to_be(url),
             f"Current url was not '{url}' as expected"
         )
 
     @staticmethod
-    def url_contains(url, timeout=10):
+    def url_contains(url: str, timeout: int = 10):
         return WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.url_contains(url),
             f"Current url did not contain '{url}' as expected"
         )
 
     @staticmethod
-    def visible(locator: Locator, timeout=10):
+    def visible(locator: Locator, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.visibility_of_element_located(locator),
             f"Element with {locator.find_method} of '{locator.selector}' is not visible"
         )
 
     @staticmethod
-    def exists(locator: Locator, timeout=10):
+    def exists(locator: Locator, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.presence_of_element_located(locator),
             f"Element with {locator.find_method} of '{locator.selector}' does not exist"
         )
 
     @staticmethod
-    def not_exists(locator: Locator, timeout=10):
+    def not_exists(locator: Locator, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.invisibility_of_element_located(locator),
             f"Element with {locator.find_method} of'{locator.selector}' exists, but should not"
         )
 
     @staticmethod
-    def clickable(locator: Locator, timeout=10):
+    def clickable(locator: Locator, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             expected_conditions.element_to_be_clickable(locator),
             f"Element with {locator.find_method} of'{locator.selector}' is not clickable"
         )
 
     @staticmethod
-    def exists_any(locators, timeout=10):
+    def exists_any(locators: List[Locator], timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.presence_of_any_element_located(locators),
             f"No element can be found to match any of the selectors '{locators}'"
         )
 
     @staticmethod
-    def not_exists_any(locators, timeout=10):
+    def not_exists_any(locators: List[Locator], timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.presence_of_any_element_located(locators),
             f"At least one element matching the locators is present'{locators}'"
         )
 
     @staticmethod
-    def visible_any(locators, timeout=10):
+    def visible_any(locators: List[Locator], timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.visibility_of_any_element_located(locators),
             f"No element can be found to match any of the selectors '{locators}'"
         )
 
     @staticmethod
-    def not_visible_any(locators, timeout=10):
+    def not_visible_any(locators: List[Locator], timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.visibility_of_any_element_located(locators),
             f"At least one element matching the locators is present'{locators}'"
         )
 
     @staticmethod
-    def exists_with_text(locator: Locator, text, timeout=10):
+    def exists_with_text(locator: Locator, text: str, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.element_to_be_present_with_text(locator, text),
             f"Element with {locator.find_method} of '{locator.selector}' and text of '{text}' does not exist"
         )
 
     @staticmethod
-    def not_exists_with_text(locator: Locator, text, timeout=10):
+    def not_exists_with_text(locator: Locator, text: str, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.element_to_be_present_with_text(locator, text),
             f"Element with {locator.find_method} of '{locator.selector}' and text of '{text}' exists, but should not"
         )
 
     @staticmethod
-    def exists_with_regex(locator: Locator, regex, timeout=10):
+    def exists_with_regex(locator: Locator, regex: AnyStr, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until(
             waitables.element_to_be_present_with_regex(locator, regex),
             f"Element with {locator.find_method} of '{locator.selector}'"
@@ -138,7 +138,7 @@ class WaitUntil(object):
         )
 
     @staticmethod
-    def not_exists_with_regex(locator: Locator, regex, timeout=10):
+    def not_exists_with_regex(locator: Locator, regex: AnyStr, timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             waitables.element_to_be_present_with_regex(locator, regex),
             f"Element with {locator.find_method} of '{locator.selector}'"
@@ -146,7 +146,7 @@ class WaitUntil(object):
         )
 
     @staticmethod
-    def alert_is_present(timeout=10):
+    def alert_is_present(timeout: int = 10):
         WebDriverWait(CONTEXT.driver, timeout).until_not(
             expected_conditions.alert_is_present(),
             f"No alert is present"
@@ -170,10 +170,10 @@ class Browser(object):
     def refresh(self):
         self.driver.refresh()
 
-    def execute_script(self, script, *args):
+    def execute_script(self, script: str, *args):
         return self.driver.execute_script(script, *args)
 
-    def navigate_to(self, url):
+    def navigate_to(self, url: str):
         self.driver.get(url)
 
     def page_title(self):
@@ -188,7 +188,7 @@ class Browser(object):
     def js_click_elem(self, element):
         self.driver.execute_script('return arguments[0].click()', element)
 
-    def js_click(self, locator):
+    def js_click(self, locator: Locator):
         element = self.get_element(locator)
         self.js_click_elem(element)
 
@@ -197,13 +197,13 @@ class Browser(object):
         self.driver.find_element(*locator).click()
 
     @handle_staleness()
-    def click_element_with_text(self, locator: Locator, text):
+    def click_element_with_text(self, locator: Locator, text: str):
         self.get_element_with_text(locator, text).click()
 
     def click_random(self, locator: Locator):
         random.choice(self.driver.find_elements(*locator)).click()
 
-    def retrying_click(self, locator: Locator, timeout=10):
+    def retrying_click(self, locator: Locator, timeout: int = 10):
         WebDriverWait(self.driver, timeout).until(waitables.successful_click(locator))
 
     @handle_staleness()
@@ -234,7 +234,7 @@ class Browser(object):
         classes = self.driver.find_element(*locator).get_attribute('class')
         return classes.split()
 
-    def get_element_with_text(self, locator: Locator, text):
+    def get_element_with_text(self, locator: Locator, text: str):
         elements = self.driver.find_elements(*locator)
         for elem in elements:
             if elem.text == text:
@@ -247,7 +247,7 @@ class Browser(object):
         return elem.location
 
     @handle_staleness()
-    def fill_txtbox(self, locator: Locator, text):
+    def fill_txtbox(self, locator: Locator, text: str):
         self.driver.find_element(*locator).clear()
         self.driver.find_element(*locator).send_keys(text)
 
@@ -264,7 +264,7 @@ class Browser(object):
         except NoSuchElementException:
             return False
 
-    def exists_with_text(self, locator: Locator, text):
+    def exists_with_text(self, locator: Locator, text: str):
         try:
             elements = self.driver.find_elements(*locator)
             for elem in elements:
@@ -283,13 +283,13 @@ class Browser(object):
             return False
         return False
 
-    def scroll_up_by(self, pixels):
+    def scroll_up_by(self, pixels: int):
         self.driver.execute_script(f"window.scrollTo(window.scrollX, window.scrollY - {pixels})")
 
-    def scroll_down_by(self, pixels):
+    def scroll_down_by(self, pixels: int):
         self.driver.execute_script(f"window.scrollTo(window.scrollX, window.scrollY + {pixels})")
 
-    def scroll_y_to(self, loc):
+    def scroll_y_to(self, loc: int):
         self.driver.execute_script(f"window.scrollTo(window.scrollX, {loc})")
 
     def is_mobile_device(self):
@@ -306,14 +306,15 @@ class Browser(object):
         return 'browserName' in self.driver.capabilities and self.driver.capabilities['browserName'] in ['Safari',
                                                                                                          'safari']
 
-    def delete_cookie(self, cookie_name):
+    def delete_cookie(self, cookie_name: str):
         self.driver.delete_cookie(cookie_name)
 
     def delete_all_cookies(self):
         self.driver.delete_all_cookies()
 
     @staticmethod
-    def retry_until_true(action_func, predicate_func, timeout=10):
+    def retry_until_true(action_func: Callable[[], Any],
+                         predicate_func: Callable[[], bool], timeout: int = 10):
         start_time = time()
         action_func()
         while time() < start_time + timeout:
@@ -328,7 +329,8 @@ class Browser(object):
         raise TimeoutError("timeout waiting for predicate to become true")
 
     @staticmethod
-    def retry_until_no_exceptions(action_func, failure_action_func, catch_exceptions, timeout=10):
+    def retry_until_no_exceptions(action_func: Callable[[], Any], failure_action_func: Callable[[], Any],
+                                  catch_exceptions: Union[Exception, Tuple[Exception]], timeout: int = 10):
         start_time = time()
         while time() < start_time + timeout:
             try:
@@ -341,7 +343,7 @@ class Browser(object):
         action_func()
 
     @staticmethod
-    def wait_for(condition_function, timeout=10):
+    def wait_for(condition_function: Callable[[], bool], timeout: int = 10):
         start_time = time()
         while time() < start_time + timeout:
             try:
@@ -356,7 +358,7 @@ class Browser(object):
         )
 
     @contextmanager
-    def wait_for_page_load(self, timeout=10):
+    def wait_for_page_load(self, timeout: int = 10):
         old_page = self.driver.find_element_by_tag_name('html')
         yield
         WebDriverWait(self.driver, timeout=timeout).until(expected_conditions.staleness_of(old_page))

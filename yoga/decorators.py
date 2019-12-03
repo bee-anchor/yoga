@@ -2,7 +2,7 @@ import functools
 from colorama import Fore
 
 
-def scenario(description):
+def scenario(description: str):
     def decorator_test(func):
         @functools.wraps(func)
         def wrapper_test(*args, desc_print=True, **kwargs):
@@ -16,7 +16,7 @@ def scenario(description):
     return decorator_test
 
 
-def step(description):
+def step(description: str):
     def decorator_step(func):
         @functools.wraps(func)
         def wrapper_step(*args, desc_print=True, **kwargs):
