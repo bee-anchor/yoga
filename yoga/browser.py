@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from typing import Union, List, AnyStr, Callable, Any, Tuple
 from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 import random
@@ -205,6 +205,21 @@ class Browser(object):
 
     def retrying_click(self, locator: Locator, timeout: int = 10):
         WebDriverWait(self.driver, timeout).until(waitables.successful_click(locator))
+
+    @handle_staleness()
+    def select_item_by_index(self, locator: Locator, index):
+        select = Select(self.get_element(locator))
+        select.select_by_index(index)
+
+    @handle_staleness()
+    def select_item_by_text(self, locator: Locator, text):
+        select = Select(self.get_element(locator))
+        select.select_by_visible_text(text)
+
+    @handle_staleness()
+    def select_item_by_value(self, locator: Locator, value):
+        select = Select(self.get_element(locator))
+        select.select_by_value(value)
 
     @handle_staleness()
     def get_element(self, locator: Locator):
