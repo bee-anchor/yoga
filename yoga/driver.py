@@ -67,7 +67,7 @@ class Driver(object):
             'browserName': self.args.browser
         }
 
-        if self.args.__dict__["extra_logging"] == 'true':
+        if "extra_logging" in self.args and self.args.__dict__["extra_logging"] == 'true':
             desired_capabilities[self.__get_logging_prefs_key()] = {'browser': 'ALL'}
 
         if self.args.browser == 'edge':
@@ -121,7 +121,7 @@ class Driver(object):
         desired_capabilities = {
             'browserName': self.args.browser
         }
-        if self.args.__dict__["extra_logging"] == 'true':
+        if "extra_logging" in self.args and self.args.__dict__["extra_logging"] == 'true':
             desired_capabilities[self.__get_logging_prefs_key()] = {'browser': 'ALL'}
         return webdriver.Remote(command_executor, desired_capabilities)
 
@@ -130,7 +130,7 @@ class Driver(object):
         desired_capabilities = {
             'browserName': self.args.browser
         }
-        if self.args.__dict__["extra_logging"] == 'true':
+        if "extra_logging" in self.args and self.args.__dict__["extra_logging"] == 'true':
             desired_capabilities[self.__get_logging_prefs_key()] = {'browser': 'ALL'}
         return webdriver.Remote(command_executor, desired_capabilities)
 
