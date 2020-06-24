@@ -21,6 +21,9 @@ base_parser.add_argument('-o', '--override', nargs='+',
 base_parser.add_argument('-u', '--tunnel', help='name of the SauceLabs tunnel')
 base_parser.add_argument('-d', '--debug', action='store_true',
                          help='run in debug mode')
+base_parser.add_argument('-el', '--extra-logging', choices=['true', 'false'], default='false',
+                         help='for selenium, print all logs for a given log type where the log type is a comma '
+                              'delimited string e.g. browser,performance')
 base_parser.add_argument('--additional-args',
                          help='additional arguments to pass directly to the test runner, e.g. -a "-a, --b=test, -c"')
 

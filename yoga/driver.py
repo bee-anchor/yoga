@@ -63,8 +63,17 @@ class Driver(object):
             'safari': webdriver.Safari,
             'edge': webdriver.Edge,
         }
+        desired_capabilities = {
+            'browserName': self.args.browser
+        }
 
-        return browser_mapping[self.args.browser]()
+        if "extra_logging" in self.args and self.args.__dict__["extra_logging"] == 'true':
+            desired_capabilities[self.__get_logging_prefs_key()] = {'browser': 'ALL'}
+
+        if self.args.browser == 'edge':
+            return browser_mapping[self.args.browser](capabilities=desired_capabilities)
+        else:
+            return browser_mapping[self.args.browser](desired_capabilities=desired_capabilities)
 
     def __appium_local_driver(self):
         command_executor = "http://localhost:4723/wd/hub"
@@ -112,6 +121,8 @@ class Driver(object):
         desired_capabilities = {
             'browserName': self.args.browser
         }
+        if "extra_logging" in self.args and self.args.__dict__["extra_logging"] == 'true':
+            desired_capabilities[self.__get_logging_prefs_key()] = {'browser': 'ALL'}
         return webdriver.Remote(command_executor, desired_capabilities)
 
     def __grid_remote_driver(self):
@@ -119,9 +130,17 @@ class Driver(object):
         desired_capabilities = {
             'browserName': self.args.browser
         }
+        if "extra_logging" in self.args and self.args.__dict__["extra_logging"] == 'true':
+            desired_capabilities[self.__get_logging_prefs_key()] = {'browser': 'ALL'}
         return webdriver.Remote(command_executor, desired_capabilities)
 
     def __name_saucelabs_job(self, session_id):
         caps = Capabilities(self.args).get_formatted_remote_capabilities()
         name = f"{CONTEXT.config['application']['name']} - {caps}"
         SauceHelper().update_job_name(session_id, name)
+
+    def __get_logging_prefs_key(self):
+        if self.args.browser == 'chrome':
+            return 'goog:loggingPrefs'
+        else:
+            return 'loggingPrefs'
